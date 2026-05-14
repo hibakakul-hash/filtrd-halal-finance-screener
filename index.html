@@ -420,7 +420,7 @@ h1, h2, h3, .wt-title, .home-greeting h2, .hc-title, .card h2, .card h3,
       </tbody>
     </table>
     </div>
-    <div class="info-block" style="margin-top:16px">This screener uses <strong>AAOIFI standards with Hanafi school defaults</strong>.</div>
+    <div class="info-block" style="margin-top:16px">This screener uses <strong>AAOIFI standards</strong>.</div>
   </div>
 </div>
 
@@ -499,7 +499,7 @@ h1, h2, h3, .wt-title, .home-greeting h2, .hc-title, .card h2, .card h3,
     <div id="zakatBreakdown"></div>
     <div class="warn-block">
       <strong>Two scholarly opinions on stocks:</strong><br>
-      <strong>Opinion 1 (Hanafi, recommended):</strong> 2.5% of total market value of halal stocks.<br>
+      <strong>Opinion 1 (recommended):</strong> 2.5% of total market value of halal stocks.<br>
       <strong>Opinion 2:</strong> 10% of dividends and capital gains only (treating stocks like agricultural income).<br>
       This calculator uses Opinion 1 (simpler and more widely followed in India).
     </div>
@@ -697,7 +697,7 @@ const GLOSSARY = [
   {term:'Halal (حلال)',urdu:'حلال',def:'Permissible under Islamic law. For investments: passes business screen and all financial ratio screens.'},
   {term:'Haram (حرام)',urdu:'حرام',def:'Prohibited under Islamic law. Fails the business screen (core business is forbidden) or severely fails financial ratios.'},
   {term:'Zakat (زکات)',urdu:'زکوٰۃ',def:'The third pillar of Islam. A 2.5% annual wealth purification payment on all wealth above the nisab threshold held for one lunar year. Not charity — a religious obligation.'},
-  {term:'Nisab (نصاب)',urdu:'نصاب',def:'Minimum threshold of wealth that triggers the zakat obligation. Calculated as the value of 87.48g of gold or 612.36g of silver — whichever is lower (Hanafi position).'},
+  {term:'Nisab (نصاب)',urdu:'نصاب',def:'Minimum threshold of wealth that triggers the zakat obligation. Calculated as the value of 87.48g of gold or 612.36g of silver — this calculator uses the lower (silver) threshold.'},
   {term:'Sukuk (صكوك)',urdu:'سکوک',def:'Islamic asset-backed securities. Represent ownership in a real asset, not a debt claim. Returns come from the asset\'s productive use, not interest. The halal alternative to conventional bonds.'},
   {term:'Musharakah (مشاركة)',urdu:'شراکت',def:'Partnership. All partners contribute capital and share profits and losses proportionally. The core structure of Islamic business finance.'},
   {term:'Mudarabah (مضاربة)',urdu:'مضاربت',def:'Trust finance. One partner provides capital (Rabb-ul-Maal), the other provides skills and labour (Mudarib). Profits shared at agreed ratio; capital losses borne by the investor.'},
@@ -713,7 +713,7 @@ const GLOSSARY = [
 //  STATE & CACHE
 // ═══════════════════════════════════════════════
 let livePrices = {};
-let goldData = { goldINR:0, silverINR:0, usdINR:0, goldUSD:0, silverUSD:0 };
+let goldData = { goldUSD:2380, silverUSD:30.2, usdINR:83.5, goldINR:(2380/31.1035)*83.5, silverINR:(30.2/31.1035)*83.5 };
 let currentStocks = [...STOCK_DATA];
 
 function weekNumber(d){ return Math.floor((d||Date.now())/(7*24*60*60*1000)); }
@@ -920,7 +920,7 @@ function updateNisab(){
   const silverNisabINR=612.36*goldData.silverINR;
   const nisabINR=Math.min(goldNisabINR,silverNisabINR);
   document.getElementById('nisabInfo').innerHTML=`
-    <strong>Current Nisab (Hanafi — use lower threshold):</strong><br>
+    <strong>Current Nisab (lower silver threshold):</strong><br>
     Gold nisab (87.48g): ₹${Math.round(goldNisabINR).toLocaleString('en-IN')} &nbsp;|&nbsp;
     Silver nisab (612.36g): ₹${Math.round(silverNisabINR).toLocaleString('en-IN')}<br>
     <strong>Applicable nisab: ₹${Math.round(nisabINR).toLocaleString('en-IN')}</strong>
@@ -1313,11 +1313,11 @@ const WALKTHROUGHS = {
           {icon:'⚖️', text:'Justice: ensures that those who have benefited from society contribute back to it proportionally'},
         ]},
       { icon:'📊', title:'Nisab — the threshold (India)',
-        body:'Nisab is the minimum wealth you must hold for one full lunar year before Zakat becomes obligatory. There are two measures — Hanafi scholars recommend the lower (silver nisab) so more people fulfil this pillar.',
+        body:'Nisab is the minimum wealth you must hold for one full lunar year before Zakat becomes obligatory.',
         list:[
-          {icon:'🥇', text:'Gold nisab: 87.48 grams of gold — approximately ₹7–8 lakh at current rates (fluctuates with gold price)'},
-          {icon:'🪙', text:'Silver nisab: 612.36 grams of silver — approximately ₹55,000–65,000 at current rates'},
-          {icon:'⚖️', text:'Hanafi position (recommended): use the lower silver nisab — ensures broader fulfilment of this pillar'},
+          {icon:'🥇', text:'Gold nisab: 87.48 grams / 7.5 tolas of gold at current gold price'},
+          {icon:'🪙', text:'Silver nisab: 612.36 grams / 52.5 tolas of silver at current rates'},
+          {icon:'⚖️', text:'This calculator uses the lower silver nisab — ensures broader fulfilment of this pillar'},
           {icon:'💡', text:'This app fetches live gold & silver prices to calculate your exact nisab in ₹ at the time of calculation'},
         ]},
       { icon:'🧮', title:'What is zakatable in India?',
@@ -1327,7 +1327,7 @@ const WALKTHROUGHS = {
           {icon:'✅', text:'Gold & silver (investment or jewellery held as store of value) — at market price'},
           {icon:'✅', text:'Halal stocks — full current market value of your holdings'},
           {icon:'✅', text:'Halal mutual fund units — current NAV × number of units'},
-          {icon:'✅', text:'Business inventory and trade receivables you expect to recover'},
+          {icon:'✅', text:'Business inventory and trade receivables'},
           {icon:'❌', text:'Personal home, car, clothes, furniture — NOT zakatable (tools of living)'},
           {icon:'❌', text:'PPF, EPF, NPS — scholarly disagreement; many say pay when received'},
         ]},
