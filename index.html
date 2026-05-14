@@ -7,6 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://api.fontshare.com/v2/css?f[]=satoshi@700,600,500,400&display=swap" rel="stylesheet">
 <style>
 :root {
   --green: #22c55e; --green-light: #052e16; --green-mid: #16a34a;
@@ -142,6 +143,13 @@ tr:hover td { background: var(--surface-2); }
   padding: 10px; margin-top: 16px; }
 #stockTableWrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
 
+/* ── TYPOGRAPHY ── */
+h1, h2, h3, .wt-title, .home-greeting h2, .hc-title, .card h2, .card h3,
+.section-title, .criterion-card .name, nav button, .badge {
+  font-family: 'Satoshi', 'Inter', sans-serif;
+  letter-spacing: -.2px;
+}
+
 /* ── HOME SCREEN ── */
 .home-screen { display: none; max-width: 720px; margin: 48px auto; padding: 0 16px; }
 .home-screen.active { display: block; }
@@ -257,7 +265,7 @@ tr:hover td { background: var(--surface-2); }
     <div class="home-card" onclick="startWalkthrough('zakat')">
       <div class="hc-icon">🕌</div>
       <div class="hc-title">Zakat Calculator</div>
-      <div class="hc-desc">Calculate your annual zakat obligation</div>
+      <div class="hc-desc">Purify your wealth — understand nisab, what's zakatable, and calculate your due</div>
     </div>
     <div class="home-card" onclick="startWalkthrough('assets')">
       <div class="hc-icon">🌿</div>
@@ -412,7 +420,7 @@ tr:hover td { background: var(--surface-2); }
       </tbody>
     </table>
     </div>
-    <div class="info-block" style="margin-top:16px">This screener uses <strong>AAOIFI standards with Hanafi school defaults</strong>.</div>
+    <div class="info-block" style="margin-top:16px">This screener uses <strong>AAOIFI standards</strong>.</div>
   </div>
 </div>
 
@@ -491,7 +499,7 @@ tr:hover td { background: var(--surface-2); }
     <div id="zakatBreakdown"></div>
     <div class="warn-block">
       <strong>Two scholarly opinions on stocks:</strong><br>
-      <strong>Opinion 1 (Hanafi, recommended):</strong> 2.5% of total market value of halal stocks.<br>
+      <strong>Opinion 1 (recommended):</strong> 2.5% of total market value of halal stocks.<br>
       <strong>Opinion 2:</strong> 10% of dividends and capital gains only (treating stocks like agricultural income).<br>
       This calculator uses Opinion 1 (simpler and more widely followed in India).
     </div>
@@ -689,7 +697,7 @@ const GLOSSARY = [
   {term:'Halal (حلال)',urdu:'حلال',def:'Permissible under Islamic law. For investments: passes business screen and all financial ratio screens.'},
   {term:'Haram (حرام)',urdu:'حرام',def:'Prohibited under Islamic law. Fails the business screen (core business is forbidden) or severely fails financial ratios.'},
   {term:'Zakat (زکات)',urdu:'زکوٰۃ',def:'The third pillar of Islam. A 2.5% annual wealth purification payment on all wealth above the nisab threshold held for one lunar year. Not charity — a religious obligation.'},
-  {term:'Nisab (نصاب)',urdu:'نصاب',def:'Minimum threshold of wealth that triggers the zakat obligation. Calculated as the value of 87.48g of gold or 612.36g of silver — whichever is lower (Hanafi position).'},
+  {term:'Nisab (نصاب)',urdu:'نصاب',def:'Minimum threshold of wealth that triggers the zakat obligation. Calculated as the value of 87.48g of gold or 612.36g of silver — this calculator uses the lower (silver) threshold.'},
   {term:'Sukuk (صكوك)',urdu:'سکوک',def:'Islamic asset-backed securities. Represent ownership in a real asset, not a debt claim. Returns come from the asset\'s productive use, not interest. The halal alternative to conventional bonds.'},
   {term:'Musharakah (مشاركة)',urdu:'شراکت',def:'Partnership. All partners contribute capital and share profits and losses proportionally. The core structure of Islamic business finance.'},
   {term:'Mudarabah (مضاربة)',urdu:'مضاربت',def:'Trust finance. One partner provides capital (Rabb-ul-Maal), the other provides skills and labour (Mudarib). Profits shared at agreed ratio; capital losses borne by the investor.'},
@@ -705,7 +713,7 @@ const GLOSSARY = [
 //  STATE & CACHE
 // ═══════════════════════════════════════════════
 let livePrices = {};
-let goldData = { goldINR:0, silverINR:0, usdINR:0, goldUSD:0, silverUSD:0 };
+let goldData = { goldUSD:2380, silverUSD:30.2, usdINR:83.5, goldINR:(2380/31.1035)*83.5, silverINR:(30.2/31.1035)*83.5 };
 let currentStocks = [...STOCK_DATA];
 
 function weekNumber(d){ return Math.floor((d||Date.now())/(7*24*60*60*1000)); }
@@ -912,7 +920,7 @@ function updateNisab(){
   const silverNisabINR=612.36*goldData.silverINR;
   const nisabINR=Math.min(goldNisabINR,silverNisabINR);
   document.getElementById('nisabInfo').innerHTML=`
-    <strong>Current Nisab (Hanafi — use lower threshold):</strong><br>
+    <strong>Current Nisab (lower silver threshold):</strong><br>
     Gold nisab (87.48g): ₹${Math.round(goldNisabINR).toLocaleString('en-IN')} &nbsp;|&nbsp;
     Silver nisab (612.36g): ₹${Math.round(silverNisabINR).toLocaleString('en-IN')}<br>
     <strong>Applicable nisab: ₹${Math.round(nisabINR).toLocaleString('en-IN')}</strong>
@@ -1212,12 +1220,21 @@ const WALKTHROUGHS = {
   stocks: {
     tab: 'screener',
     steps: [
-      { icon:'📊', title:'Ethical stock investing',
-        body:'When you buy a stock you become a part-owner of a real business. Islam encourages this — risk and reward are shared honestly. The key is ensuring the business itself, and how it finances itself, are clean.',
+      { icon:'💡', title:'Is buying stocks halal?',
+        body:'Many Muslims avoid the stock market entirely, believing it is gambling. This is a misunderstanding — one that has cost many families decades of halal wealth growth. Here is what Islamic scholars actually say.',
         list:[
-          {icon:'✅', text:'Ownership in real productive businesses is encouraged'},
+          {icon:'✅', text:'Buying a share = becoming a part-owner of a real business — this is classic Islamic partnership (Musharakah), encouraged in the Quran'},
+          {icon:'✅', text:'Long-term investment in halal companies is not only permitted but recommended by contemporary Islamic finance scholars'},
+          {icon:'❌', text:'What IS prohibited: speculation (buying purely to flip), margin trading (interest-based leverage), and investing in haram businesses'},
+          {icon:'📖', text:'AAOIFI Standard No. 21 explicitly permits stock investment subject to 5 screening criteria — scroll on to see them'},
+        ]},
+      { icon:'📊', title:'Ethical stock investing',
+        body:'When you buy a screened stock you are a co-owner of a productive business. The business earns through real trade, not interest. Risk and reward are shared — exactly as Islam requires.',
+        list:[
           {icon:'✅', text:'Profits from genuine trade and production are halal'},
+          {icon:'✅', text:'Dividends represent your share of real business earnings'},
           {icon:'❌', text:'Companies earning from interest, alcohol, tobacco or gambling are excluded'},
+          {icon:'🧹', text:'Any tiny impermissible income (< 5%) is purified by donating that % of dividends to charity'},
         ]},
       { icon:'🔍', title:'Our 5 screening criteria',
         body:'Every stock must pass five tests before being considered ethical, based on AAOIFI Standard No. 21.',
@@ -1234,22 +1251,30 @@ const WALKTHROUGHS = {
           {icon:'🔎', text:'Search by company name or ticker symbol'},
           {icon:'🌍', text:'Filter by market: NSE India or NYSE / NASDAQ'},
           {icon:'🏷', text:'Filter by verdict: Ethical, Doubtful, Unethical'},
-          {icon:'📋', text:'Click Details on any stock for a full breakdown'},
+          {icon:'📋', text:'Click Details on any stock for a full breakdown and purification %'},
         ]},
     ]},
   funds: {
     tab: 'funds',
     steps: [
+      { icon:'💡', title:'Are mutual funds really haram?',
+        body:'A widespread belief among Indian Muslims is that all mutual funds are haram because they invest in "stocks" — which are assumed to be gambling. This is incorrect, and it has kept many families away from one of the safest halal wealth-building tools available.',
+        list:[
+          {icon:'❌', text:'Conventional mutual funds: invest in banks, alcohol, tobacco, finance companies — these ARE problematic'},
+          {icon:'✅', text:'Halal mutual funds: every stock is screened by a Shariah board, prohibited companies excluded entirely'},
+          {icon:'✅', text:'The 3 SEBI-registered halal funds in India are explicitly validated by TASIS — a recognised Islamic finance board'},
+          {icon:'📖', text:'Owning shares in halal businesses through a fund is the same as owning them directly — permissible and encouraged'},
+        ]},
       { icon:'🏦', title:'What makes a mutual fund halal?',
         body:'A halal mutual fund must have a Shariah supervisory board that screens every stock in the portfolio. Any small impermissible income earned is purified by donating it to charity.',
         list:[
           {icon:'✅', text:'Screened by a recognised Shariah board'},
           {icon:'✅', text:'Invests only in ethically screened equities'},
           {icon:'❌', text:'Excludes all banking, insurance and finance stocks'},
-          {icon:'🧹', text:'Manager purifies any residual impermissible income'},
+          {icon:'🧹', text:'Manager purifies any residual impermissible income each year'},
         ]},
       { icon:'🇮🇳', title:'Available in India',
-        body:'India has 3 SEBI-registered halal mutual funds, all screened by TASIS. You can invest via Groww, Zerodha or Upstox.',
+        body:'India has 3 SEBI-registered halal mutual funds, all screened by TASIS. Invest via Groww, Zerodha or Upstox — no special process needed.',
         list:[
           {icon:'📈', text:'Tata Ethical Fund — large-cap focused, oldest halal fund in India'},
           {icon:'📈', text:'Taurus Ethical Fund — multi-cap, BSE 500 screened'},
@@ -1279,13 +1304,32 @@ const WALKTHROUGHS = {
   zakat: {
     tab: 'zakat',
     steps: [
-      { icon:'🕌', title:'What is Zakat?',
-        body:'Zakat is the third pillar of Islam — a 2.5% annual wealth purification on all zakatable assets held for one full lunar year above the nisab threshold. It is an obligation, not optional charity.',
+      { icon:'🕌', title:'Why do we pay Zakat?',
+        body:'Zakat (زکوٰۃ) means "to purify and to grow." It is the third pillar of Islam — not optional charity, but a binding annual obligation on every Muslim whose wealth exceeds the nisab threshold.',
         list:[
-          {icon:'💰', text:'Rate: 2.5% of total zakatable wealth'},
-          {icon:'📅', text:'Condition: wealth held for one full lunar year (hawl)'},
-          {icon:'📊', text:'Nisab: value of 87.48g gold or 612.36g silver — use the lower'},
-          {icon:'🧮', text:'Covers: gold, silver, cash, halal stocks, business inventory'},
+          {icon:'🙏', text:'Spiritual: purifies your wealth from greed and attachment — a reminder that wealth is a trust from Allah'},
+          {icon:'🤝', text:'Social: redistributes surplus wealth to the eight categories of recipients (asnaf), reducing poverty and inequality'},
+          {icon:'📈', text:'Economic: keeps wealth circulating in the community rather than hoarded — Quran 9:34 warns against hoarding'},
+          {icon:'⚖️', text:'Justice: ensures that those who have benefited from society contribute back to it proportionally'},
+        ]},
+      { icon:'📊', title:'Nisab — the threshold (India)',
+        body:'Nisab is the minimum wealth you must hold for one full lunar year before Zakat becomes obligatory.',
+        list:[
+          {icon:'🥇', text:'Gold nisab: 87.48 grams / 7.5 tolas of gold at current gold price'},
+          {icon:'🪙', text:'Silver nisab: 612.36 grams / 52.5 tolas of silver at current rates'},
+          {icon:'⚖️', text:'This calculator uses the lower silver nisab — ensures broader fulfilment of this pillar'},
+          {icon:'💡', text:'This app fetches live gold & silver prices to calculate your exact nisab in ₹ at the time of calculation'},
+        ]},
+      { icon:'🧮', title:'What is zakatable in India?',
+        body:'Based on classical scholarship and IndiaZakat.com guidance, here is what counts toward your zakatable wealth as an Indian Muslim investor.',
+        list:[
+          {icon:'✅', text:'Cash, bank balances, UPI wallets — full amount'},
+          {icon:'✅', text:'Gold & silver (investment or jewellery held as store of value) — at market price'},
+          {icon:'✅', text:'Halal stocks — full current market value of your holdings'},
+          {icon:'✅', text:'Halal mutual fund units — current NAV × number of units'},
+          {icon:'✅', text:'Business inventory and trade receivables'},
+          {icon:'❌', text:'Personal home, car, clothes, furniture — NOT zakatable (tools of living)'},
+          {icon:'❌', text:'PPF, EPF, NPS — scholarly disagreement; many say pay when received'},
         ]},
     ]},
   assets: {
