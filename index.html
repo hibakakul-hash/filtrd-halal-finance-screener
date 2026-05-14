@@ -10,7 +10,7 @@
 <link href="https://api.fontshare.com/v2/css?f[]=satoshi@700,600,500,400&display=swap" rel="stylesheet">
 <style>
 :root {
-  --green: #22c55e; --green-light: #052e16; --green-mid: #16a34a;
+  --green: #16a34a; --green-light: #052e16; --green-mid: #15803d;
   --amber: #f59e0b; --amber-light: #431407; --amber-bg: #1c0f00;
   --red: #f87171; --red-light: #450a0a;
   --blue: #60a5fa; --blue-light: #0c1a3a;
@@ -28,10 +28,10 @@ header { background: #0f0f0f; color: white; padding: 14px 20px;
 header h1 { font-size: 26px; font-weight: 700; color: var(--green); letter-spacing: -.5px; }
 header span { font-size: 12px; opacity: .6; }
 nav { background: #0f0f0f; border-bottom: 1px solid var(--gray-border);
-  display: flex; overflow-x: auto; padding: 0 12px; }
-nav button { padding: 10px 14px; border: none; background: none; cursor: pointer;
-  font-size: 13px; color: var(--text-muted); white-space: nowrap;
-  border-bottom: 2px solid transparent; transition: .15s; color: #888; }
+  display: flex; flex-wrap: wrap; padding: 0 8px; }
+nav button { padding: 7px 10px; border: none; background: none; cursor: pointer;
+  font-size: 12px; color: #888; white-space: nowrap;
+  border-bottom: 2px solid transparent; transition: .15s; }
 nav button:hover { color: var(--green); }
 nav button.active { color: var(--green); border-bottom-color: var(--green);
   font-weight: 500; }
@@ -86,8 +86,10 @@ tr:hover td { background: var(--surface-2); }
   padding: 10px 14px; border-radius: 0 var(--radius) var(--radius) 0; margin-bottom: 12px; }
 .warn-block { background: var(--amber-light); border-left: 3px solid var(--amber);
   padding: 10px 14px; border-radius: 0 var(--radius) var(--radius) 0; margin-bottom: 12px; }
-.haram-block { background: var(--red-light); border-left: 3px solid var(--red);
-  padding: 10px 14px; border-radius: 0 var(--radius) var(--radius) 0; margin-bottom: 8px; }
+.haram-block { background: rgba(248,113,113,.06); border: 1px solid rgba(248,113,113,.2);
+  border-left: 3px solid var(--red); padding: 10px 14px;
+  border-radius: 0 var(--radius) var(--radius) 0; margin-bottom: 8px; }
+.haram-block div[style*="color:#7f1d1d"] { color: var(--text-muted) !important; }
 .loader { text-align: center; padding: 20px; color: var(--text-muted); font-size: 13px; }
 .price-row { display: flex; align-items: baseline; gap: 8px; }
 .price-big { font-size: 22px; font-weight: 600; }
@@ -217,7 +219,7 @@ h1, h2, h3, .wt-title, .home-greeting h2, .hc-title, .card h2, .card h3,
 <header>
   <div style="font-size:26px">☪</div>
   <div>
-    <h1>Filtrd</h1>
+    <h1 onclick="goHome()" style="cursor:pointer" title="Back to Home">Filtrd</h1>
     <span>by Paisa Paisa Girl · Ethical investing for India</span>
   </div>
   <div style="margin-left:auto;display:flex;align-items:center;gap:12px">
@@ -717,8 +719,11 @@ let goldData = { goldUSD:2380, silverUSD:30.2, usdINR:83.5, goldINR:(2380/31.103
 let currentStocks = [...STOCK_DATA];
 
 function weekNumber(d){ return Math.floor((d||Date.now())/(7*24*60*60*1000)); }
+function dayNumber(){ return Math.floor(Date.now()/(24*60*60*1000)); }
 function cacheSet(k,v){ try{localStorage.setItem(k,JSON.stringify({v,w:weekNumber()}))}catch(e){} }
 function cacheGet(k){ try{const s=localStorage.getItem(k);if(!s)return null;const p=JSON.parse(s);if(p.w===weekNumber())return p.v;return null}catch(e){return null} }
+function cacheSetDay(k,v){ try{localStorage.setItem(k,JSON.stringify({v,d:dayNumber()}))}catch(e){} }
+function cacheGetDay(k){ try{const s=localStorage.getItem(k);if(!s)return null;const p=JSON.parse(s);if(p.d===dayNumber())return p.v;return null}catch(e){return null} }
 
 // ═══════════════════════════════════════════════
 //  TAB NAVIGATION
@@ -866,7 +871,7 @@ async function fetchLivePrices(){
 //  GOLD PRICES
 // ═══════════════════════════════════════════════
 async function fetchGoldPrices(){
-  const cached=cacheGet('gold_data');
+  const cached=cacheGetDay('gold_data');
   if(cached){goldData=cached;renderGold();updateNisab();return;}
   try{
     const [goldR,fxR]=await Promise.all([
@@ -879,36 +884,38 @@ async function fetchGoldPrices(){
     const goldUSD=gd.items?.[0]?.xauPrice||2350;
     const silverUSD=gd.items?.[0]?.xagPrice||29;
     goldData={goldUSD,silverUSD,usdINR,goldINR:(goldUSD/31.1035)*usdINR,silverINR:(silverUSD/31.1035)*usdINR};
-    cacheSet('gold_data',goldData);
+    cacheSetDay('gold_data',goldData);
   }catch(e){
-    // Fallback static values
     goldData={goldUSD:2380,silverUSD:30.2,usdINR:83.5,goldINR:(2380/31.1035)*83.5,silverINR:(30.2/31.1035)*83.5};
   }
   renderGold();updateNisab();
 }
 
 function renderGold(){
+  const TOLA=11.6638;
+  const goldPerTola=Math.round(goldData.goldINR*TOLA).toLocaleString('en-IN');
+  const silverPerTola=Math.round(goldData.silverINR*TOLA).toLocaleString('en-IN');
   const box=document.getElementById('goldPriceBox');
   box.innerHTML=`
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px">
-      <div style="background:var(--amber-light);border-radius:8px;padding:12px;text-align:center">
-        <div style="font-size:11px;color:var(--amber);font-weight:500">GOLD (per gram)</div>
-        <div style="font-size:22px;font-weight:700;color:var(--amber)">₹${Math.round(goldData.goldINR).toLocaleString('en-IN')}</div>
-        <div style="font-size:11px;color:var(--text-muted)">$${goldData.goldUSD.toFixed(2)}/troy oz</div>
+      <div style="background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.25);border-radius:8px;padding:14px;text-align:center">
+        <div style="font-size:11px;color:var(--amber);font-weight:600;letter-spacing:.5px">GOLD</div>
+        <div style="font-size:22px;font-weight:700;color:var(--amber);margin:4px 0">₹${Math.round(goldData.goldINR).toLocaleString('en-IN')}<span style="font-size:12px;font-weight:400">/gram</span></div>
+        <div style="font-size:12px;color:var(--text-muted)">₹${goldPerTola} / tola (11.66g)</div>
       </div>
-      <div style="background:#f3f4f6;border-radius:8px;padding:12px;text-align:center">
-        <div style="font-size:11px;color:var(--text-muted);font-weight:500">SILVER (per gram)</div>
-        <div style="font-size:22px;font-weight:700">₹${Math.round(goldData.silverINR).toLocaleString('en-IN')}</div>
-        <div style="font-size:11px;color:var(--text-muted)">$${goldData.silverUSD.toFixed(2)}/troy oz</div>
+      <div style="background:rgba(148,163,184,.08);border:1px solid rgba(148,163,184,.2);border-radius:8px;padding:14px;text-align:center">
+        <div style="font-size:11px;color:var(--text-muted);font-weight:600;letter-spacing:.5px">SILVER</div>
+        <div style="font-size:22px;font-weight:700;color:var(--text);margin:4px 0">₹${Math.round(goldData.silverINR).toLocaleString('en-IN')}<span style="font-size:12px;font-weight:400">/gram</span></div>
+        <div style="font-size:12px;color:var(--text-muted)">₹${silverPerTola} / tola (11.66g)</div>
       </div>
-      <div style="background:var(--blue-light);border-radius:8px;padding:12px;text-align:center">
-        <div style="font-size:11px;color:var(--blue);font-weight:500">USD/INR</div>
-        <div style="font-size:22px;font-weight:700;color:var(--blue)">₹${goldData.usdINR.toFixed(2)}</div>
-        <div style="font-size:11px;color:var(--text-muted)">Exchange rate</div>
+      <div style="background:rgba(96,165,250,.08);border:1px solid rgba(96,165,250,.2);border-radius:8px;padding:14px;text-align:center">
+        <div style="font-size:11px;color:var(--blue);font-weight:600;letter-spacing:.5px">USD / INR</div>
+        <div style="font-size:22px;font-weight:700;color:var(--blue);margin:4px 0">₹${goldData.usdINR.toFixed(2)}</div>
+        <div style="font-size:12px;color:var(--text-muted)">Exchange rate</div>
       </div>
     </div>
-    <div style="font-size:11px;color:var(--text-muted);margin-top:8px;text-align:right">
-      Prices from goldprice.org + open.er-api.com · Cached weekly · 1 troy oz = 31.1035g
+    <div style="font-size:11px;color:var(--text-muted);margin-top:10px;text-align:right">
+      Prices from goldprice.org + open.er-api.com · Refreshed daily · 1 tola = 11.6638g
     </div>`;
 }
 
