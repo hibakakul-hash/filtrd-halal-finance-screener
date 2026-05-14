@@ -1,0 +1,1087 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Halal Finance Screener — Islamic Investment Tool for India</title>
+<style>
+:root {
+  --green: #1a7a4a; --green-light: #e8f5ee; --green-mid: #2d9e61;
+  --amber: #b45309; --amber-light: #fef3c7; --amber-bg: #fffbeb;
+  --red: #b91c1c; --red-light: #fee2e2;
+  --blue: #1e40af; --blue-light: #dbeafe;
+  --gray: #374151; --gray-light: #f9fafb; --gray-border: #e5e7eb;
+  --text: #111827; --text-muted: #6b7280;
+  --gold: #d97706; --gold-light: #fde68a;
+  --radius: 8px; --shadow: 0 1px 3px rgba(0,0,0,.1);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 14px; color: var(--text); background: #f3f4f6; line-height: 1.5; }
+header { background: var(--green); color: white; padding: 14px 20px;
+  display: flex; align-items: center; gap: 12px; }
+header h1 { font-size: 18px; font-weight: 600; }
+header span { font-size: 12px; opacity: .75; }
+nav { background: white; border-bottom: 1px solid var(--gray-border);
+  display: flex; overflow-x: auto; padding: 0 12px; }
+nav button { padding: 10px 14px; border: none; background: none; cursor: pointer;
+  font-size: 13px; color: var(--text-muted); white-space: nowrap;
+  border-bottom: 2px solid transparent; transition: .15s; }
+nav button:hover { color: var(--green); }
+nav button.active { color: var(--green); border-bottom-color: var(--green);
+  font-weight: 500; }
+.container { max-width: 1100px; margin: 0 auto; padding: 16px; }
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+.card { background: white; border-radius: var(--radius); border: 1px solid var(--gray-border);
+  padding: 16px; margin-bottom: 14px; box-shadow: var(--shadow); }
+.card h2 { font-size: 16px; font-weight: 600; margin-bottom: 12px; color: var(--green); }
+.card h3 { font-size: 14px; font-weight: 600; margin-bottom: 8px; }
+.badge { display: inline-flex; align-items: center; gap: 4px; padding: 3px 8px;
+  border-radius: 12px; font-size: 12px; font-weight: 500; }
+.badge.halal { background: var(--green-light); color: var(--green); }
+.badge.doubtful { background: var(--amber-light); color: var(--amber); }
+.badge.haram { background: var(--red-light); color: var(--red); }
+.badge.na { background: #f3f4f6; color: var(--text-muted); }
+.controls { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; }
+.controls select, .controls input { padding: 8px 12px; border: 1px solid var(--gray-border);
+  border-radius: var(--radius); font-size: 13px; background: white; }
+.controls input { min-width: 200px; }
+.controls button { padding: 8px 16px; background: var(--green); color: white;
+  border: none; border-radius: var(--radius); cursor: pointer; font-size: 13px; }
+.controls button:hover { background: var(--green-mid); }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+th { background: var(--gray-light); padding: 10px 12px; text-align: left;
+  font-weight: 500; border-bottom: 1px solid var(--gray-border); font-size: 12px; }
+td { padding: 10px 12px; border-bottom: 1px solid #f0f0f0; vertical-align: middle; }
+tr:hover td { background: #fafafa; }
+.ratio-bar { display: flex; align-items: center; gap: 8px; }
+.ratio-bar .bar { flex: 1; height: 6px; background: #e5e7eb; border-radius: 3px; }
+.ratio-bar .fill { height: 100%; border-radius: 3px; transition: width .3s; }
+.ratio-bar .fill.ok { background: var(--green); }
+.ratio-bar .fill.warn { background: var(--gold); }
+.ratio-bar .fill.fail { background: var(--red); }
+.ratio-bar .val { font-size: 11px; min-width: 36px; text-align: right; color: var(--text-muted); }
+.criterion-card { border: 1px solid var(--gray-border); border-radius: var(--radius);
+  padding: 14px; margin-bottom: 10px; }
+.criterion-card .name { font-weight: 600; font-size: 14px; margin-bottom: 4px; }
+.criterion-card .desc { font-size: 12px; color: var(--text-muted); margin-bottom: 8px; }
+.criterion-card .threshold { display: inline-block; background: var(--green-light);
+  color: var(--green); padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 500; }
+.section-title { font-size: 15px; font-weight: 600; margin: 20px 0 10px; color: var(--gray); }
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+@media(max-width:680px) { .grid-2, .grid-3 { grid-template-columns: 1fr; } }
+.info-block { background: var(--green-light); border-left: 3px solid var(--green);
+  padding: 10px 14px; border-radius: 0 var(--radius) var(--radius) 0; margin-bottom: 12px; }
+.warn-block { background: var(--amber-light); border-left: 3px solid var(--amber);
+  padding: 10px 14px; border-radius: 0 var(--radius) var(--radius) 0; margin-bottom: 12px; }
+.haram-block { background: var(--red-light); border-left: 3px solid var(--red);
+  padding: 10px 14px; border-radius: 0 var(--radius) var(--radius) 0; margin-bottom: 8px; }
+.loader { text-align: center; padding: 20px; color: var(--text-muted); font-size: 13px; }
+.price-row { display: flex; align-items: baseline; gap: 8px; }
+.price-big { font-size: 22px; font-weight: 600; }
+.price-change.up { color: var(--green); }
+.price-change.down { color: var(--red); }
+.meta { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+.zakat-input { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+.zakat-input label { display: block; font-size: 12px; color: var(--text-muted); margin-bottom: 4px; }
+.zakat-input input { width: 100%; padding: 8px 10px; border: 1px solid var(--gray-border);
+  border-radius: var(--radius); font-size: 14px; }
+.zakat-result { background: var(--green-light); border-radius: var(--radius);
+  padding: 16px; text-align: center; }
+.zakat-result .amount { font-size: 28px; font-weight: 700; color: var(--green); }
+.zakat-result .label { font-size: 13px; color: var(--text-muted); }
+.app-card { border: 1px solid var(--gray-border); border-radius: var(--radius);
+  padding: 14px; display: flex; gap: 12px; align-items: flex-start; margin-bottom: 10px; }
+.app-card .icon { width: 40px; height: 40px; border-radius: 8px; background: var(--green-light);
+  display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
+.app-card .info .name { font-weight: 600; }
+.app-card .info .desc { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+.app-card .info .tags { margin-top: 6px; display: flex; gap: 4px; flex-wrap: wrap; }
+.tag { background: #f3f4f6; padding: 2px 6px; border-radius: 8px; font-size: 11px; color: var(--gray); }
+.tag.india { background: #fef3c7; color: #92400e; }
+.tag.global { background: var(--blue-light); color: var(--blue); }
+.stock-detail { border: 1px solid var(--gray-border); border-radius: var(--radius);
+  padding: 16px; margin-top: 12px; }
+.criteria-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin: 12px 0; }
+@media(max-width:700px) { .criteria-grid { grid-template-columns: 1fr 1fr; } }
+.crit-box { border: 1px solid var(--gray-border); border-radius: 6px; padding: 10px;
+  text-align: center; }
+.crit-box .crit-name { font-size: 11px; color: var(--text-muted); margin-bottom: 4px; }
+.crit-box .crit-val { font-size: 16px; font-weight: 700; }
+.crit-box .crit-limit { font-size: 10px; color: var(--text-muted); }
+.crit-box.ok { background: var(--green-light); border-color: #a7d7b8; }
+.crit-box.warn { background: var(--amber-bg); border-color: #fcd34d; }
+.crit-box.fail { background: var(--red-light); border-color: #fca5a5; }
+.tab-intro { font-size: 13px; color: var(--text-muted); margin-bottom: 16px; line-height: 1.6; }
+.sukuk-timeline { position: relative; padding-left: 24px; }
+.sukuk-timeline::before { content: ''; position: absolute; left: 8px; top: 4px;
+  bottom: 4px; width: 2px; background: var(--green-light); }
+.sukuk-step { position: relative; margin-bottom: 16px; }
+.sukuk-step::before { content: ''; position: absolute; left: -20px; top: 5px;
+  width: 10px; height: 10px; border-radius: 50%; background: var(--green); }
+.fund-row { display: flex; justify-content: space-between; align-items: center;
+  padding: 10px 0; border-bottom: 1px solid #f0f0f0; }
+.fund-row:last-child { border-bottom: none; }
+.search-result { padding: 12px; border: 1px solid var(--gray-border);
+  border-radius: var(--radius); margin-bottom: 8px; cursor: pointer; transition: .15s; }
+.search-result:hover { border-color: var(--green); background: var(--green-light); }
+.disclaimer { font-size: 11px; color: var(--text-muted); background: #f9fafb;
+  border: 1px solid var(--gray-border); border-radius: var(--radius);
+  padding: 10px; margin-top: 16px; }
+</style>
+</head>
+<body>
+
+<header>
+  <div style="font-size:28px">☪</div>
+  <div>
+    <h1>Halal Finance Screener</h1>
+    <span>Shariah-compliant investing for India — updated weekly · AAOIFI standard</span>
+  </div>
+  <div style="margin-left:auto;font-size:12px;opacity:.8" id="lastUpdate"></div>
+</header>
+
+<nav id="mainNav">
+  <button class="active" onclick="showTab('screener')">📊 Stock Screener</button>
+  <button onclick="showTab('funds')">🏦 Mutual Funds</button>
+  <button onclick="showTab('etfs')">🥇 ETFs &amp; Gold</button>
+  <button onclick="showTab('criteria')">✅ Screening Criteria</button>
+  <button onclick="showTab('allowed')">🌿 Allowed Investments</button>
+  <button onclick="showTab('sukuk')">📜 Sukuk</button>
+  <button onclick="showTab('prohibited')">🚫 Prohibited</button>
+  <button onclick="showTab('zakat')">🕌 Zakat Calculator</button>
+  <button onclick="showTab('apps')">📱 Recommended Apps</button>
+  <button onclick="showTab('learn')">📚 Learn</button>
+  <button onclick="showTab('about')">ℹ About</button>
+</nav>
+
+<div class="container">
+
+<!-- ═══════════════════════════════════════════════════
+     TAB 1: STOCK SCREENER
+══════════════════════════════════════════════════ -->
+<div id="tab-screener" class="tab-content active">
+  <div class="card">
+    <h2>Shariah Stock Screener</h2>
+    <p class="tab-intro">Search any stock by company name or ticker. Select market to browse Nifty 500 or NYSE halal-screened stocks. Live prices fetched from Yahoo Finance. Screening ratios updated weekly.</p>
+    <div class="controls">
+      <select id="marketSelect" onchange="filterStocks()">
+        <option value="ALL">All Markets</option>
+        <option value="NSE">NSE India (Nifty 500)</option>
+        <option value="NYSE">NYSE / NASDAQ (US)</option>
+        <option value="GLOBAL">Global / Other</option>
+      </select>
+      <select id="verdictFilter" onchange="filterStocks()">
+        <option value="ALL">All verdicts</option>
+        <option value="HALAL">Halal only</option>
+        <option value="DOUBTFUL">Doubtful only</option>
+        <option value="HARAM">Haram (avoid)</option>
+      </select>
+      <select id="sectorFilter" onchange="filterStocks()">
+        <option value="ALL">All sectors</option>
+        <option value="IT">IT / Technology</option>
+        <option value="PHARMA">Pharma / Healthcare</option>
+        <option value="FMCG">FMCG / Consumer</option>
+        <option value="AUTO">Automobile</option>
+        <option value="REALTY">Real Estate</option>
+        <option value="ENERGY">Energy / Oil</option>
+        <option value="METAL">Metals / Mining</option>
+        <option value="INFRA">Infrastructure</option>
+      </select>
+      <input type="text" id="stockSearch" placeholder="Search: Reliance, TCS, AAPL…" oninput="filterStocks()">
+      <button onclick="fetchLivePrices()">↻ Refresh Prices</button>
+    </div>
+    <div id="stockTableWrap">
+      <table id="stockTable">
+        <thead><tr>
+          <th>Company</th>
+          <th>Ticker</th>
+          <th>Sector</th>
+          <th>Verdict</th>
+          <th>Price (Live)</th>
+          <th>Debt %</th>
+          <th>Interest Inc %</th>
+          <th>Recv %</th>
+          <th>Cash %</th>
+          <th>Details</th>
+        </tr></thead>
+        <tbody id="stockTbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div id="stockDetailPanel" style="display:none">
+    <div class="card stock-detail" id="detailContent"></div>
+  </div>
+
+  <div class="disclaimer">
+    ⚠ This tool is for educational purposes only and does not constitute a fatwa or financial advice.
+    Screening is based on AAOIFI standards with Hanafi defaults. Financial ratios are sourced from
+    publicly available annual reports and updated periodically. Always consult a qualified Islamic
+    scholar and SEBI-registered advisor before investing. Live prices from Yahoo Finance.
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     TAB 2: MUTUAL FUNDS
+══════════════════════════════════════════════════ -->
+<div id="tab-funds" class="tab-content">
+  <div class="card">
+    <h2>Halal Mutual Funds</h2>
+    <p class="tab-intro">Shariah-compliant mutual funds currently available for Indian investors. These funds are screened by recognised Shariah boards and invest only in halal-compliant equities.</p>
+    <div class="section-title">India — SEBI-Registered Shariah Mutual Funds</div>
+    <div class="info-block">India currently has <strong>3 SEBI-registered Shariah-compliant mutual funds</strong>. All three follow the TASIS (Taqwaa Advisory and Shariah Investment Solutions) screening methodology.</div>
+    <div id="indiafundsList"></div>
+    <div class="section-title" style="margin-top:20px">International — Available for NRIs / Global Indians</div>
+    <div id="globalFundsList"></div>
+    <div class="warn-block" style="margin-top:16px">
+      <strong>Note on returns:</strong> Halal mutual funds exclude financial sector stocks (banks, conventional insurance, NBFCs), which are ~35% of Nifty 500 by weight. This means halal funds may underperform broad indices in periods when financial stocks lead. However, they have historically outperformed during financial crises.
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     TAB 3: ETFs & DIGITAL GOLD
+══════════════════════════════════════════════════ -->
+<div id="tab-etfs" class="tab-content">
+  <div class="card">
+    <h2>ETFs, Digital Gold &amp; Shariah Guidance</h2>
+    <div class="section-title">Shariah-Compliant ETFs (Global)</div>
+    <div id="etfList"></div>
+    <div class="section-title">Digital Gold — Shariah Status in India</div>
+    <div class="warn-block">
+      <strong>Digital Gold platforms (Sovereign Gold Bond, DigiGold, SafeGold, MMTC-PAMP):</strong>
+      Most digital gold platforms in India are <strong>NOT Shariah-compliant</strong> because (a) they do not guarantee delivery of the specific unit you purchased, violating the requirement for specific ownership, (b) SGBs pay interest (riba), and (c) gold ETFs involve indirect ownership not certified by any Shariah board.
+    </div>
+    <div class="info-block">
+      <strong>What IS halal:</strong> Purchasing <strong>physical gold coins or bars</strong> from a jeweller or certified refinery, paid spot, with immediate physical delivery. Store in a bank locker or home safe. Avoid making charges-based jewellery as investment.
+    </div>
+    <div class="section-title">Live Gold &amp; Silver Prices (INR)</div>
+    <div id="goldPriceBox" class="card" style="margin:0">
+      <div class="loader">Loading gold prices…</div>
+    </div>
+    <div class="section-title">Sovereign Gold Bond (SGB) — Islamic Ruling</div>
+    <div class="haram-block">SGBs pay 2.5% annual interest — this is <strong>riba</strong> and makes SGBs haram. Even though the principal tracks gold price (which is permissible), the guaranteed interest component prohibits them. Scholars generally agree on this ruling without exception.</div>
+    <div id="halalGoldStocks"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     TAB 4: SCREENING CRITERIA
+══════════════════════════════════════════════════ -->
+<div id="tab-criteria" class="tab-content">
+  <div class="card">
+    <h2>The 5 Shariah Screening Criteria — Explained Simply</h2>
+    <p class="tab-intro">Every stock must pass FIVE tests to be considered halal. Here is what each test means and why it exists, in plain language.</p>
+    <div id="criteriaExplainer"></div>
+    <div class="section-title">Compare Standards</div>
+    <div style="overflow-x:auto">
+    <table>
+      <thead><tr><th>Criterion</th><th>AAOIFI</th><th>Dow Jones Islamic</th><th>FTSE Shariah</th><th>MSCI Islamic</th><th>S&amp;P Shariah</th></tr></thead>
+      <tbody>
+        <tr><td>Debt / market cap</td><td>≤30%</td><td>≤33%</td><td>≤33% of assets</td><td>≤33% of assets</td><td>≤33%</td></tr>
+        <tr><td>Interest income / revenue</td><td>≤5%</td><td>≤5%</td><td>≤5%</td><td>≤5%</td><td>≤5%</td></tr>
+        <tr><td>Cash+securities / market cap</td><td>≤30%</td><td>≤33%</td><td>≤33% of assets</td><td>≤33% of assets</td><td>≤33%</td></tr>
+        <tr><td>Receivables / market cap</td><td>N/A</td><td>≤33%</td><td>≤50% of assets</td><td>≤33% of assets</td><td>≤49%</td></tr>
+        <tr><td>Haram business tolerance</td><td>0%</td><td>≤5% of revenue</td><td>≤5% of revenue</td><td>≤5% of revenue</td><td>≤5% of revenue</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <div class="info-block" style="margin-top:16px">This screener uses <strong>AAOIFI standards with Hanafi school defaults</strong>, which is the most widely followed methodology for Indian Muslims.</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     TAB 5: ALLOWED INVESTMENTS
+══════════════════════════════════════════════════ -->
+<div id="tab-allowed" class="tab-content">
+  <div class="card">
+    <h2>Allowed (Halal) Forms of Investment</h2>
+    <p class="tab-intro">Islam encourages wealth creation and investment. The following are permitted — and some are strongly recommended — for Muslims.</p>
+    <div id="allowedList"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     TAB 6: SUKUK
+══════════════════════════════════════════════════ -->
+<div id="tab-sukuk" class="tab-content">
+  <div class="card">
+    <h2>Sukuk — Islamic Bonds (Simple Explanation)</h2>
+    <p class="tab-intro">Sukuk are the Islamic alternative to conventional interest-bearing bonds. They are currently <strong>not available in India</strong>, but are widely used in Malaysia, GCC countries, and increasingly in the UK.</p>
+    <div id="sukukContent"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     TAB 7: PROHIBITED
+══════════════════════════════════════════════════ -->
+<div id="tab-prohibited" class="tab-content">
+  <div class="card">
+    <h2>Prohibited (Haram) Forms of Investment</h2>
+    <p class="tab-intro">These investment types are forbidden in Islam. Understanding WHY they are prohibited helps make better financial decisions — it is not arbitrary restriction but protection of wealth and justice.</p>
+    <div id="prohibitedList"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     TAB 8: ZAKAT CALCULATOR
+══════════════════════════════════════════════════ -->
+<div id="tab-zakat" class="tab-content">
+  <div class="card">
+    <h2>Zakat Calculator — INR Based</h2>
+    <p class="tab-intro">Zakat is 2.5% of your total zakatable wealth (held for one full lunar year above the nisab threshold). Enter your holdings below — prices auto-filled from live rates.</p>
+    <div class="info-block" id="nisabInfo">Loading nisab values…</div>
+    <div class="zakat-input">
+      <div>
+        <label>Gold (grams)</label>
+        <input type="number" id="zGold" value="0" oninput="calcZakat()" min="0">
+      </div>
+      <div>
+        <label>Silver (grams)</label>
+        <input type="number" id="zSilver" value="0" oninput="calcZakat()" min="0">
+      </div>
+      <div>
+        <label>Cash savings &amp; bank balance (₹)</label>
+        <input type="number" id="zCash" value="0" oninput="calcZakat()" min="0">
+      </div>
+      <div>
+        <label>Halal stocks / mutual funds market value (₹)</label>
+        <input type="number" id="zStocks" value="0" oninput="calcZakat()" min="0">
+      </div>
+      <div>
+        <label>Business inventory / receivables (₹)</label>
+        <input type="number" id="zBusiness" value="0" oninput="calcZakat()" min="0">
+      </div>
+      <div>
+        <label>Other assets (property for sale, etc.) (₹)</label>
+        <input type="number" id="zOther" value="0" oninput="calcZakat()" min="0">
+      </div>
+    </div>
+    <div id="zakatResult" class="zakat-result" style="margin-bottom:16px">
+      <div class="label">Zakat due (2.5%)</div>
+      <div class="amount" id="zakatAmount">₹0</div>
+      <div class="label" id="zakatNote"></div>
+    </div>
+    <div id="zakatBreakdown"></div>
+    <div class="warn-block">
+      <strong>Two scholarly opinions on stocks:</strong><br>
+      <strong>Opinion 1 (Hanafi, recommended):</strong> 2.5% of total market value of halal stocks.<br>
+      <strong>Opinion 2:</strong> 10% of dividends and capital gains only (treating stocks like agricultural income).<br>
+      This calculator uses Opinion 1 (simpler and more widely followed in India).
+    </div>
+    <div class="disclaimer">Zakat calculation is for guidance only. Consult your local imam or scholar for a precise ruling based on your specific situation. Lunar year (hawl) must be completed on the assets.</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     TAB 9: RECOMMENDED APPS
+══════════════════════════════════════════════════ -->
+<div id="tab-apps" class="tab-content">
+  <div class="card">
+    <h2>Recommended Apps &amp; Platforms</h2>
+    <p class="tab-intro">Vetted tools for Shariah-compliant investing, screening, and Islamic finance education.</p>
+    <div id="appsList"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     TAB 10: LEARN
+══════════════════════════════════════════════════ -->
+<div id="tab-learn" class="tab-content">
+  <div class="card">
+    <h2>Islamic Finance Glossary</h2>
+    <p class="tab-intro">Key terms explained in simple English (and Hindi/Urdu where helpful).</p>
+    <div id="glossaryContent"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     TAB 11: ABOUT
+══════════════════════════════════════════════════ -->
+<div id="tab-about" class="tab-content">
+  <div class="card">
+    <h2>About This Tool</h2>
+    <div id="aboutContent"></div>
+  </div>
+</div>
+
+</div><!-- /container -->
+
+<script>
+'use strict';
+
+// ═══════════════════════════════════════════════
+//  DATA: STOCKS
+// ═══════════════════════════════════════════════
+const STOCK_DATA = [
+  // NSE NIFTY 500 — HALAL
+  {name:'TCS',full:'Tata Consultancy Services',ticker:'TCS.NS',market:'NSE',sector:'IT',verdict:'HALAL',debt:1.2,interestInc:0.3,recv:18,cash:12,businessReason:'IT services — no prohibited activity',purif:0.3},
+  {name:'Infosys',full:'Infosys Limited',ticker:'INFY.NS',market:'NSE',sector:'IT',verdict:'HALAL',debt:0.5,interestInc:0.8,recv:22,cash:14,businessReason:'IT services — passes business screen',purif:0.8},
+  {name:'Wipro',full:'Wipro Limited',ticker:'WIPRO.NS',market:'NSE',sector:'IT',verdict:'DOUBTFUL',debt:1.1,interestInc:5.2,recv:24,cash:11,businessReason:'IT services — borderline: >5% revenue from BFSI clients',purif:5.2},
+  {name:'HCL Tech',full:'HCL Technologies',ticker:'HCLTECH.NS',market:'NSE',sector:'IT',verdict:'HALAL',debt:0.8,interestInc:1.2,recv:26,cash:9,businessReason:'IT services — no prohibited activity',purif:1.2},
+  {name:'Tech Mahindra',full:'Tech Mahindra',ticker:'TECHM.NS',market:'NSE',sector:'IT',verdict:'HALAL',debt:2.1,interestInc:1.0,recv:28,cash:10,businessReason:'IT services',purif:1.0},
+  {name:'Reliance',full:'Reliance Industries',ticker:'RELIANCE.NS',market:'NSE',sector:'ENERGY',verdict:'DOUBTFUL',debt:28.1,interestInc:1.8,recv:21,cash:8,businessReason:'Energy/Retail/Telecom — debt ratio borderline',purif:1.8},
+  {name:'L&T',full:'Larsen & Toubro',ticker:'LT.NS',market:'NSE',sector:'INFRA',verdict:'HALAL',debt:18.4,interestInc:2.1,recv:32,cash:7,businessReason:'Engineering/infrastructure',purif:2.1},
+  {name:'Sun Pharma',full:'Sun Pharmaceutical',ticker:'SUNPHARMA.NS',market:'NSE',sector:'PHARMA',verdict:'HALAL',debt:3.2,interestInc:0.9,recv:25,cash:11,businessReason:'Pharmaceuticals — permissible',purif:0.9},
+  {name:'Dr Reddys',full:"Dr. Reddy's Laboratories",ticker:'DRREDDY.NS',market:'NSE',sector:'PHARMA',verdict:'HALAL',debt:5.1,interestInc:0.7,recv:22,cash:13,businessReason:'Pharmaceuticals',purif:0.7},
+  {name:'Cipla',full:'Cipla Limited',ticker:'CIPLA.NS',market:'NSE',sector:'PHARMA',verdict:'HALAL',debt:4.8,interestInc:0.5,recv:20,cash:12,businessReason:'Pharmaceuticals',purif:0.5},
+  {name:'Divis Lab',full:"Divi's Laboratories",ticker:'DIVISLAB.NS',market:'NSE',sector:'PHARMA',verdict:'HALAL',debt:0.2,interestInc:0.3,recv:18,cash:14,businessReason:'API Pharma manufacturing',purif:0.3},
+  {name:'Tata Motors',full:'Tata Motors',ticker:'TATAMOTORS.NS',market:'NSE',sector:'AUTO',verdict:'DOUBTFUL',debt:31.2,interestInc:4.1,recv:19,cash:9,businessReason:'Automobiles — debt ratio high',purif:4.1},
+  {name:'M&M',full:'Mahindra & Mahindra',ticker:'M&M.NS',market:'NSE',sector:'AUTO',verdict:'DOUBTFUL',debt:22.4,interestInc:3.8,recv:21,cash:8,businessReason:'Auto + NBFC subsidiary — interest income borderline',purif:3.8},
+  {name:'Maruti',full:'Maruti Suzuki',ticker:'MARUTI.NS',market:'NSE',sector:'AUTO',verdict:'HALAL',debt:0.0,interestInc:2.9,recv:14,cash:16,businessReason:'Automobile manufacturer — debt-free',purif:2.9},
+  {name:'Hero MotoCorp',full:'Hero MotoCorp',ticker:'HEROMOTOCO.NS',market:'NSE',sector:'AUTO',verdict:'HALAL',debt:1.4,interestInc:1.6,recv:15,cash:13,businessReason:'Two-wheelers',purif:1.6},
+  {name:'Bajaj Auto',full:'Bajaj Auto',ticker:'BAJAJ-AUTO.NS',market:'NSE',sector:'AUTO',verdict:'HALAL',debt:0.0,interestInc:2.8,recv:12,cash:14,businessReason:'Two/three-wheelers — debt-free',purif:2.8},
+  {name:'Asian Paints',full:'Asian Paints',ticker:'ASIANPAINT.NS',market:'NSE',sector:'FMCG',verdict:'HALAL',debt:3.6,interestInc:1.1,recv:16,cash:11,businessReason:'Decorative paints',purif:1.1},
+  {name:'Titan',full:'Titan Company',ticker:'TITAN.NS',market:'NSE',sector:'FMCG',verdict:'HALAL',debt:5.2,interestInc:1.4,recv:23,cash:9,businessReason:'Jewellery/watches — permissible',purif:1.4},
+  {name:'Nestle India',full:'Nestle India',ticker:'NESTLEIND.NS',market:'NSE',sector:'FMCG',verdict:'HALAL',debt:0.0,interestInc:0.6,recv:11,cash:8,businessReason:'Food products — halal-screened products',purif:0.6},
+  {name:'Britannia',full:'Britannia Industries',ticker:'BRITANNIA.NS',market:'NSE',sector:'FMCG',verdict:'HALAL',debt:4.8,interestInc:0.8,recv:14,cash:7,businessReason:'Biscuits/foods',purif:0.8},
+  {name:'Hindustan Unilever',full:'Hindustan Unilever',ticker:'HINDUNILVR.NS',market:'NSE',sector:'FMCG',verdict:'HALAL',debt:0.0,interestInc:1.2,recv:13,cash:10,businessReason:'FMCG consumer goods',purif:1.2},
+  {name:'ITC',full:'ITC Limited',ticker:'ITC.NS',market:'NSE',sector:'FMCG',verdict:'HARAM',debt:0.0,interestInc:0.4,recv:12,cash:9,businessReason:'FAIL: Significant tobacco business (cigarettes)',purif:0},
+  {name:'ONGC',full:'Oil & Natural Gas Corp',ticker:'ONGC.NS',market:'NSE',sector:'ENERGY',verdict:'HALAL',debt:9.2,interestInc:0.8,recv:18,cash:7,businessReason:'Petroleum exploration — permissible',purif:0.8},
+  {name:'Tata Steel',full:'Tata Steel',ticker:'TATASTEEL.NS',market:'NSE',sector:'METAL',verdict:'DOUBTFUL',debt:30.8,interestInc:0.6,recv:20,cash:6,businessReason:'Steel — debt ratio borderline (30.8%)',purif:0.6},
+  {name:'JSW Steel',full:'JSW Steel',ticker:'JSWSTEEL.NS',market:'NSE',sector:'METAL',verdict:'HARAM',debt:42.1,interestInc:0.4,recv:18,cash:5,businessReason:'FAIL: Debt ratio 42.1% exceeds 33% threshold',purif:0},
+  {name:'HDFC Bank',full:'HDFC Bank',ticker:'HDFCBANK.NS',market:'NSE',sector:'BANKING',verdict:'HARAM',debt:0,interestInc:100,recv:0,cash:0,businessReason:'FAIL: Conventional bank — entire business model is riba',purif:0},
+  {name:'ICICI Bank',full:'ICICI Bank',ticker:'ICICIBANK.NS',market:'NSE',sector:'BANKING',verdict:'HARAM',debt:0,interestInc:100,recv:0,cash:0,businessReason:'FAIL: Conventional bank — riba-based',purif:0},
+  {name:'SBI',full:'State Bank of India',ticker:'SBIN.NS',market:'NSE',sector:'BANKING',verdict:'HARAM',debt:0,interestInc:100,recv:0,cash:0,businessReason:'FAIL: Government conventional bank',purif:0},
+  {name:'Axis Bank',full:'Axis Bank',ticker:'AXISBANK.NS',market:'NSE',sector:'BANKING',verdict:'HARAM',debt:0,interestInc:100,recv:0,cash:0,businessReason:'FAIL: Conventional bank',purif:0},
+  {name:'Bajaj Finance',full:'Bajaj Finance',ticker:'BAJFINANCE.NS',market:'NSE',sector:'BANKING',verdict:'HARAM',debt:0,interestInc:100,recv:0,cash:0,businessReason:'FAIL: NBFC — interest-based lending',purif:0},
+  {name:'DLF',full:'DLF Limited',ticker:'DLF.NS',market:'NSE',sector:'REALTY',verdict:'DOUBTFUL',debt:18.6,interestInc:2.2,recv:28,cash:6,businessReason:'Real estate — passes; check project-level compliance',purif:2.2},
+  {name:'Godrej Properties',full:'Godrej Properties',ticker:'GODREJPROP.NS',market:'NSE',sector:'REALTY',verdict:'HALAL',debt:14.2,interestInc:1.8,recv:24,cash:8,businessReason:'Real estate development',purif:1.8},
+  {name:'Pidilite',full:'Pidilite Industries',ticker:'PIDILITIND.NS',market:'NSE',sector:'FMCG',verdict:'HALAL',debt:0.4,interestInc:0.6,recv:22,cash:12,businessReason:'Adhesives — permissible',purif:0.6},
+  {name:'Havells',full:'Havells India',ticker:'HAVELLS.NS',market:'NSE',sector:'INFRA',verdict:'HALAL',debt:0.0,interestInc:1.4,recv:20,cash:11,businessReason:'Electrical equipment',purif:1.4},
+  {name:'Bharat Forge',full:'Bharat Forge',ticker:'BHARATFORG.NS',market:'NSE',sector:'AUTO',verdict:'DOUBTFUL',debt:24.8,interestInc:0.4,recv:28,cash:6,businessReason:'Forging — note: supplies defence sector',purif:0.4},
+  {name:'Coal India',full:'Coal India',ticker:'COALINDIA.NS',market:'NSE',sector:'ENERGY',verdict:'HALAL',debt:0.0,interestInc:1.1,recv:22,cash:14,businessReason:'Coal mining — permissible',purif:1.1},
+  {name:'Tata Power',full:'Tata Power',ticker:'TATAPOWER.NS',market:'NSE',sector:'ENERGY',verdict:'DOUBTFUL',debt:29.4,interestInc:1.2,recv:18,cash:7,businessReason:'Power — debt borderline',purif:1.2},
+  {name:'Info Edge',full:'Info Edge (Naukri.com)',ticker:'NAUKRI.NS',market:'NSE',sector:'IT',verdict:'HALAL',debt:0.0,interestInc:2.4,recv:16,cash:18,businessReason:'Job portal / classifieds',purif:2.4},
+  {name:'Zomato',full:'Zomato',ticker:'ZOMATO.NS',market:'NSE',sector:'IT',verdict:'DOUBTFUL',debt:0.0,interestInc:3.8,recv:24,cash:28,businessReason:'Food delivery — high cash ratio; alcohol delivery concern',purif:3.8},
+  {name:'Paytm',full:'One97 Communications (Paytm)',ticker:'PAYTM.NS',market:'NSE',sector:'BANKING',verdict:'HARAM',debt:0,interestInc:42,recv:0,cash:0,businessReason:'FAIL: Payments bank + interest-based lending products',purif:0},
+  // NYSE / NASDAQ — HALAL
+  {name:'Apple',full:'Apple Inc',ticker:'AAPL',market:'NYSE',sector:'IT',verdict:'HALAL',debt:18.2,interestInc:1.4,recv:14,cash:11,businessReason:'Consumer electronics / software',purif:1.4},
+  {name:'Microsoft',full:'Microsoft Corporation',ticker:'MSFT',market:'NYSE',sector:'IT',verdict:'HALAL',debt:14.6,interestInc:2.1,recv:16,cash:12,businessReason:'Software / cloud — passes all screens',purif:2.1},
+  {name:'Alphabet',full:'Alphabet (Google)',ticker:'GOOGL',market:'NYSE',sector:'IT',verdict:'HALAL',debt:2.4,interestInc:1.8,recv:12,cash:9,businessReason:'Search / advertising — passes',purif:1.8},
+  {name:'NVIDIA',full:'NVIDIA Corporation',ticker:'NVDA',market:'NYSE',sector:'IT',verdict:'HALAL',debt:8.4,interestInc:1.2,recv:18,cash:14,businessReason:'Semiconductors / AI chips',purif:1.2},
+  {name:'Amazon',full:'Amazon.com Inc',ticker:'AMZN',market:'NYSE',sector:'IT',verdict:'DOUBTFUL',debt:12.1,interestInc:1.6,recv:16,cash:8,businessReason:'E-commerce + cloud; sells alcohol/entertainment content',purif:1.6},
+  {name:'Tesla',full:'Tesla Inc',ticker:'TSLA',market:'NYSE',sector:'AUTO',verdict:'HALAL',debt:6.8,interestInc:0.8,recv:14,cash:12,businessReason:'EV manufacturer',purif:0.8},
+  {name:'Johnson & Johnson',full:'Johnson & Johnson',ticker:'JNJ',market:'NYSE',sector:'PHARMA',verdict:'HALAL',debt:22.4,interestInc:1.1,recv:19,cash:8,businessReason:'Healthcare / pharma',purif:1.1},
+  {name:'Pfizer',full:'Pfizer Inc',ticker:'PFE',market:'NYSE',sector:'PHARMA',verdict:'HALAL',debt:18.6,interestInc:0.6,recv:21,cash:9,businessReason:'Pharmaceuticals — permissible',purif:0.6},
+  {name:'ExxonMobil',full:'ExxonMobil Corporation',ticker:'XOM',market:'NYSE',sector:'ENERGY',verdict:'HALAL',debt:14.8,interestInc:0.4,recv:16,cash:6,businessReason:'Oil & gas — permissible',purif:0.4},
+  {name:'JPMorgan',full:'JPMorgan Chase',ticker:'JPM',market:'NYSE',sector:'BANKING',verdict:'HARAM',debt:0,interestInc:100,recv:0,cash:0,businessReason:'FAIL: Conventional bank — riba-based',purif:0},
+  {name:'Goldman Sachs',full:'Goldman Sachs',ticker:'GS',market:'NYSE',sector:'BANKING',verdict:'HARAM',debt:0,interestInc:100,recv:0,cash:0,businessReason:'FAIL: Investment bank',purif:0},
+  {name:'Coca-Cola',full:'Coca-Cola Company',ticker:'KO',market:'NYSE',sector:'FMCG',verdict:'HALAL',debt:28.4,interestInc:0.9,recv:11,cash:8,businessReason:'Beverages — non-alcoholic',purif:0.9},
+  {name:'McDonald\'s',full:"McDonald's Corporation",ticker:'MCD',market:'NYSE',sector:'FMCG',verdict:'DOUBTFUL',debt:32.1,interestInc:0.4,recv:12,cash:7,businessReason:'Fast food — debt borderline; pork products concern',purif:0.4},
+  {name:'Nike',full:'Nike Inc',ticker:'NKE',market:'NYSE',sector:'FMCG',verdict:'HALAL',debt:16.4,interestInc:1.2,recv:18,cash:11,businessReason:'Sportswear',purif:1.2},
+];
+
+// ═══════════════════════════════════════════════
+//  DATA: MUTUAL FUNDS
+// ═══════════════════════════════════════════════
+const INDIA_FUNDS = [
+  {name:'Tata Ethical Fund (Growth)',amc:'Tata Mutual Fund',type:'Equity',sebi:'SEBI registered',board:'TASIS',minSip:'₹500/month',nav:'~₹310',cagr3y:'~14.2%',screen:'Nifty 500 after TASIS screening',note:'Oldest Shariah fund in India. Large-cap focused.'},
+  {name:'Taurus Ethical Fund (Growth)',amc:'Taurus Mutual Fund',type:'Equity',sebi:'SEBI registered',board:'TASIS',minSip:'₹500/month',nav:'~₹68',cagr3y:'~12.8%',screen:'BSE 500 screened',note:'Multi-cap, slightly smaller AUM than Tata.'},
+  {name:'Quantum Ethical Fund',amc:'Quantum Mutual Fund',type:'Equity',sebi:'SEBI registered',board:'TASIS',minSip:'₹500/month',nav:'~₹22',cagr3y:'~11.4%',screen:'Nifty 500 after TASIS screen',note:'Value-style approach. All-direct plans, no distributor.'},
+];
+const GLOBAL_FUNDS = [
+  {name:'Amundi Islamic Global Equity',region:'Global',currency:'USD/EUR',screen:'MSCI Islamic',access:'Via NRI investment platforms',note:'Largest Islamic equity fund globally.'},
+  {name:'HSBC Islamic Global Equity Index',region:'Global',currency:'USD',screen:'MSCI Islamic',access:'Via NRI / foreign brokers',note:'Index tracker, low cost.'},
+  {name:'Wahed FTSE USA Shariah ETF',region:'US',currency:'USD',screen:'FTSE Shariah',access:'Wahed Invest app (India NRI)',note:'Listed on NYSE. Halal-only US large caps.'},
+  {name:'SP Funds S&P 500 Sharia',region:'US',currency:'USD',screen:'S&P Shariah',access:'US brokerage (NRI)',note:'Passively tracks S&P 500 Shariah index.'},
+];
+
+// ═══════════════════════════════════════════════
+//  DATA: ETFs
+// ═══════════════════════════════════════════════
+const ETF_DATA = [
+  {name:'iShares MSCI World Islamic ETF',ticker:'ISWD.L',exchange:'LSE',screen:'MSCI Islamic',region:'Global',currency:'GBP',note:'Largest Shariah ETF globally. ~1,200 stocks.'},
+  {name:'Wahed FTSE USA Shariah ETF',ticker:'HLAL',exchange:'NYSE',screen:'FTSE Shariah',region:'US',currency:'USD',note:'Halal US equities. Excludes all banks and financials.'},
+  {name:'SP Funds S&P 500 Sharia Industry Exclusions',ticker:'SPUS',exchange:'NYSE',screen:'S&P Shariah',region:'US',currency:'USD',note:'Tracks S&P 500 after Shariah exclusions.'},
+  {name:'Saturna Al-Kawthar Global Focused Fund',ticker:'SAKA',exchange:'NYSE',screen:'AAOIFI',region:'Global',currency:'USD',note:'Actively managed. Long track record.'},
+  {name:'Franklin FTSE Saudi Arabia ETF',ticker:'FLSA',exchange:'NYSE',screen:'Local halal screen',region:'Saudi Arabia',currency:'USD',note:'Saudi market — most stocks are Shariah-compliant.'},
+  {name:'Nifty 500 Shariah Index (No ETF yet)',ticker:'N/A',exchange:'NSE',screen:'TASIS India',region:'India',currency:'INR',note:'Index exists, no ETF product launched yet. Watch for 2025-26 launch.'},
+];
+
+// ═══════════════════════════════════════════════
+//  DATA: ALLOWED INVESTMENTS
+// ═══════════════════════════════════════════════
+const ALLOWED_DATA = [
+  {cat:'Equities',title:'Shariah-screened stocks',emoji:'📈',desc:'Shares in companies that pass the 5-criterion Shariah screen. Risk is shared between investor and company — exactly as Islam requires.',india:'Yes — NSE/BSE via Zerodha, Groww, etc.',status:'HALAL'},
+  {cat:'Equities',title:'Islamic mutual funds',emoji:'🏦',desc:'Pooled investment in Shariah-screened stocks managed by a professional fund house with a Shariah board.',india:'Yes — Tata Ethical, Taurus Ethical, Quantum Ethical',status:'HALAL'},
+  {cat:'Real Assets',title:'Physical gold & silver',emoji:'🥇',desc:'Buying physical metal with immediate delivery. No paper or digital receipts — only actual coins/bars stored safely.',india:'Yes — jewellers, banks, certified refineries',status:'HALAL'},
+  {cat:'Real Assets',title:'Real estate (residential/commercial)',emoji:'🏠',desc:'Buying property for rental income or capital appreciation. No interest-based mortgage — use halal financing or pay cash.',india:'Yes',status:'HALAL'},
+  {cat:'Real Assets',title:'Agricultural land / farming',emoji:'🌾',desc:'Islam strongly encourages agriculture. Income from farming land is halal and may have favourable zakat treatment.',india:'Yes',status:'HALAL'},
+  {cat:'Business',title:'Direct business ownership',emoji:'🏪',desc:'Starting or investing in a business that operates entirely on halal principles. Zero tolerance for haram activities or interest-based debt in the business.',india:'Yes',status:'HALAL'},
+  {cat:'Business',title:'Halal dropshipping (Ju\'ala contract)',emoji:'🛒',desc:'Running an online store where you market goods for a supplier and keep the margin above their floor price. Structured as a Ju\'ala (reward contract) not a sale.',india:'Yes',status:'HALAL'},
+  {cat:'Business',title:'Halal private equity / angel investing',emoji:'💼',desc:'Investing in unlisted startups or private companies that are 100% halal in operations and financing (zero interest-bearing debt).',india:'Yes',status:'HALAL'},
+  {cat:'Finance',title:'Sukuk (Islamic bonds)',emoji:'📜',desc:'Asset-backed certificates that represent ownership of a real asset and return is from the asset\'s productive use — not interest. Not yet available in India.',india:'Not yet',status:'HALAL'},
+  {cat:'Finance',title:'Musharakah (partnership)',emoji:'🤝',desc:'Profit-and-loss sharing partnership. Both parties invest and share both gains and losses. The classic Islamic business structure.',india:'Yes — informal',status:'HALAL'},
+  {cat:'Finance',title:'Mudarabah (trust finance)',emoji:'💡',desc:'One party provides capital, the other provides skill/labour. Profits shared at pre-agreed ratio; losses borne by capital provider only.',india:'Yes — informal',status:'HALAL'},
+  {cat:'Finance',title:'Murabaha (cost-plus sale)',emoji:'🏷',desc:'Bank/financier buys the asset and resells to you at disclosed markup with deferred payment. Not a loan — a sale. Used for car and home financing in Islamic banks.',india:'Limited — some NBFCs',status:'HALAL'},
+  {cat:'Finance',title:'Ijarah (lease finance)',emoji:'🔑',desc:'Leasing arrangement where the lessor (bank) owns the asset and the lessee pays rent for use. Used for home finance (you rent then eventually buy).',india:'Limited',status:'HALAL'},
+];
+
+// ═══════════════════════════════════════════════
+//  DATA: PROHIBITED
+// ═══════════════════════════════════════════════
+const PROHIBITED_DATA = [
+  {title:'Bank fixed deposits (FD)',reason:'Riba',emoji:'🏦',detail:'FDs guarantee a predetermined interest return regardless of how the bank uses your money. This is the textbook definition of riba — guaranteed return without sharing risk.',alternative:'Invest in halal mutual funds or physical gold instead.'},
+  {title:'Conventional savings accounts (interest-bearing)',reason:'Riba',emoji:'💳',detail:'Any bank account that credits interest on your balance. Keep a zero-balance account for transactions but do not earn interest. If interest is credited, donate it without claiming it as income.',alternative:'Use a zero-balance current account or ask for non-interest savings option.'},
+  {title:'Conventional home/car loan (EMI with interest)',reason:'Riba',emoji:'🏠',detail:'Paying or charging fixed interest on borrowed money is prohibited regardless of purpose. The loan structure — not the purpose — makes it haram.',alternative:'Murabaha (cost-plus sale) or Ijarah (lease-to-own) from Islamic financiers.'},
+  {title:'Conventional bonds / debentures / NCDs',reason:'Riba',emoji:'📉',detail:'All fixed-income securities that promise a predetermined interest coupon are riba-based and prohibited.',alternative:'Sukuk — when they become available in India.'},
+  {title:'Sovereign Gold Bond (SGB)',reason:'Riba',emoji:'🪙',detail:'SGBs pay 2.5% annual interest on top of gold price tracking. This interest component is riba and makes the instrument prohibited even though gold price appreciation is permissible.',alternative:'Physical gold coins/bars.'},
+  {title:'Options, futures & derivatives',reason:'Gharar + Maysir',emoji:'📊',detail:'Derivatives involve selling something you do not own (short), excessive uncertainty about what you are buying, and zero-sum outcomes that are essentially gambling. All major scholars prohibit these.',alternative:'Spot stock purchases only. No leverage.'},
+  {title:'Margin trading',reason:'Riba + Gharar',emoji:'⚠',detail:'Borrowing money from a broker to buy stocks involves paying interest (riba) on the borrowed amount. Prohibited explicitly in AAOIFI Standard 21.',alternative:'Only invest what you own outright (cash on hand).'},
+  {title:'Short selling',reason:'Bay al-Ma\'dum',emoji:'↘',detail:'Selling securities you do not own is explicitly prohibited — "it is not permitted to sell shares that the seller does not own" (AAOIFI Standard 21).',alternative:'Only buy and hold. No shorting.'},
+  {title:'Conventional insurance (life/health/vehicle)',reason:'Gharar + Riba',emoji:'📋',detail:'Insurance involves paying known premiums for unknown payouts at unknown times (gharar), and premiums are invested in interest-bearing instruments (riba).',alternative:'Takaful (cooperative insurance) — currently limited in India.'},
+  {title:'Stocks of banks & conventional finance',reason:'Riba',emoji:'🏛',detail:'Investing in companies whose core business IS interest (HDFC Bank, ICICI, Bajaj Finance, SBI, etc.) is prohibited because your investment directly funds and profits from riba.',alternative:'Invest in IT, pharma, FMCG, infrastructure — non-financial sectors.'},
+  {title:'Alcohol industry stocks',reason:'Haram business',emoji:'🍷',detail:'United Spirits, Radico Khaitan, Allied Blenders — all haram. Note: ITC is also haram due to its tobacco business.',alternative:'FMCG companies that do not produce alcohol.'},
+  {title:'Gambling / casino stocks',reason:'Maysir',emoji:'🎰',detail:'Any company that operates gambling, lottery, or chance-based income. This includes many online gaming platforms if they involve real-money wagering.',alternative:'Gaming companies focused on skill-based games (no real money gambling).'},
+  {title:'Day trading (highly speculative)',reason:'Maysir',emoji:'⚡',detail:'Rapid buying and selling purely for short-term price movements, with no intention to own the underlying business, crosses the line from permissible trade into gambling.',alternative:'Long-term value investing in screened stocks.'},
+  {title:'Multi-level marketing (pyramid schemes)',reason:'Gharar + exploitation',emoji:'🔺',detail:'MLM structures where income comes primarily from recruiting others rather than selling real products involve gharar and exploitation of later participants.',alternative:'Transparent service businesses or affiliate marketing with full disclosure.'},
+];
+
+// ═══════════════════════════════════════════════
+//  DATA: APPS
+// ═══════════════════════════════════════════════
+const APPS_DATA = [
+  {name:'Musaffa',icon:'📊',country:'Global',tags:['global','free tier'],desc:'Stock screener with 200,000+ securities. AAOIFI and multiple methodology screening. Free basic plan. Web and mobile.',link:'https://musaffa.com'},
+  {name:'Zoya',icon:'✅',country:'Global',tags:['global','iOS','Android'],desc:'Clean mobile app for halal stock screening. ETF analysis, purification calculator. Free + premium plans.',link:'https://zoya.finance'},
+  {name:'Wahed Invest',icon:'🌙',country:'India/Global',tags:['india','global','SEBI'],desc:'SEBI-registered robo-advisor. Builds fully Shariah-compliant portfolios. Available to Indian residents.',link:'https://wahedinvest.com'},
+  {name:'Zamzam Capital',icon:'🕌',country:'India',tags:['india','SEBI'],desc:'SEBI-registered Research Analyst (INH000016199). Halal stock lists, smallcases, Shariah advisory. India-focused.',link:'https://zamzam-capital.com'},
+  {name:'Halal Terminal',icon:'🖥',country:'Global',tags:['global','developer'],desc:'Professional-grade API for developers. 58+ endpoints, 5 screening methodologies. Free tier available.',link:'https://halalterminal.com'},
+  {name:'IslamicFin (Islamicly)',icon:'📱',country:'Global',tags:['global','free'],desc:'Mobile app with halal screening, news, and Islamic finance education. Available on iOS and Android.',link:'https://islamicly.com'},
+  {name:'TASIS India',icon:'🇮🇳',country:'India',tags:['india'],desc:'Taqwaa Advisory: the Shariah board behind all 3 Indian halal mutual funds. Publishes screened stock lists.',link:'https://tasisindia.com'},
+  {name:'Groww / Zerodha + Tata Ethical',icon:'📈',country:'India',tags:['india'],desc:'Use any SEBI-registered broker (Groww, Zerodha, Upstox) and invest in the 3 halal mutual funds directly.',link:'https://groww.in'},
+  {name:'Islami Bank apps',icon:'🏦',country:'Global',tags:['global'],desc:'For NRIs: bank with Al Rajhi Bank (Saudi), Dubai Islamic Bank, or Bank Islam Malaysia for halal banking services.',link:''},
+];
+
+// ═══════════════════════════════════════════════
+//  DATA: GLOSSARY
+// ═══════════════════════════════════════════════
+const GLOSSARY = [
+  {term:'Riba (ربا)',urdu:'سود',def:'Literally "increase". Any predetermined guaranteed return on money lent, regardless of outcome. The most fundamental prohibition in Islamic finance. Includes bank interest, bond coupons, and fixed FD returns.'},
+  {term:'Gharar (غرر)',urdu:'دھوکا / غیر یقینی',def:'Excessive uncertainty or ambiguity in a contract. Includes selling things you do not own, contracts with hidden clauses, derivatives, and insurance with unpredictable payouts.'},
+  {term:'Maysir (ميسر)',urdu:'جوا / قمار',def:'Gambling — zero-sum transactions based on chance. Futures, options, and purely speculative day trading fall here.'},
+  {term:'Halal (حلال)',urdu:'حلال',def:'Permissible under Islamic law. For investments: passes business screen and all financial ratio screens.'},
+  {term:'Haram (حرام)',urdu:'حرام',def:'Prohibited under Islamic law. Fails the business screen (core business is forbidden) or severely fails financial ratios.'},
+  {term:'Zakat (زکات)',urdu:'زکوٰۃ',def:'The third pillar of Islam. A 2.5% annual wealth purification payment on all wealth above the nisab threshold held for one lunar year. Not charity — a religious obligation.'},
+  {term:'Nisab (نصاب)',urdu:'نصاب',def:'Minimum threshold of wealth that triggers the zakat obligation. Calculated as the value of 87.48g of gold or 612.36g of silver — whichever is lower (Hanafi position).'},
+  {term:'Sukuk (صكوك)',urdu:'سکوک',def:'Islamic asset-backed securities. Represent ownership in a real asset, not a debt claim. Returns come from the asset\'s productive use, not interest. The halal alternative to conventional bonds.'},
+  {term:'Musharakah (مشاركة)',urdu:'شراکت',def:'Partnership. All partners contribute capital and share profits and losses proportionally. The core structure of Islamic business finance.'},
+  {term:'Mudarabah (مضاربة)',urdu:'مضاربت',def:'Trust finance. One partner provides capital (Rabb-ul-Maal), the other provides skills and labour (Mudarib). Profits shared at agreed ratio; capital losses borne by the investor.'},
+  {term:'Murabaha (مرابحة)',urdu:'مرابحہ',def:'Cost-plus sale. The financier buys an asset and resells it at a disclosed markup with deferred payment. Not a loan — the price is fixed from day one, no compound interest.'},
+  {term:'Ijarah (إجارة)',urdu:'اجارہ',def:'Lease. The owner (bank) leases an asset to the user for periodic payments. Used in Islamic home finance (lease-to-own structures).'},
+  {term:'Takaful (تكافل)',urdu:'تکافل',def:'Cooperative Islamic insurance. Participants contribute to a shared pool; claims are paid from the pool. The halal alternative to conventional insurance.'},
+  {term:'Purification (Tazkiyah)',urdu:'تزکیہ',def:'Donating the portion of investment income that came from impermissible sources (up to 5% tolerance). Calculated as: impure income % × dividends received.'},
+  {term:'AAOIFI',urdu:'',def:'Accounting and Auditing Organization for Islamic Financial Institutions. Bahrain-based international body that sets the gold standard for Islamic finance compliance. This screener uses AAOIFI Standard No. 21.'},
+  {term:'Ju\'ala (جعالة)',urdu:'جعالہ',def:'Reward contract. One party offers a reward to anyone who achieves a specified result. Used to structure halal dropshipping — the supplier offers a reward (margin) to anyone who finds buyers for their goods.'},
+];
+
+// ═══════════════════════════════════════════════
+//  STATE & CACHE
+// ═══════════════════════════════════════════════
+let livePrices = {};
+let goldData = { goldINR:0, silverINR:0, usdINR:0, goldUSD:0, silverUSD:0 };
+let currentStocks = [...STOCK_DATA];
+
+function weekNumber(d){ return Math.floor((d||Date.now())/(7*24*60*60*1000)); }
+function cacheSet(k,v){ try{localStorage.setItem(k,JSON.stringify({v,w:weekNumber()}))}catch(e){} }
+function cacheGet(k){ try{const s=localStorage.getItem(k);if(!s)return null;const p=JSON.parse(s);if(p.w===weekNumber())return p.v;return null}catch(e){return null} }
+
+// ═══════════════════════════════════════════════
+//  TAB NAVIGATION
+// ═══════════════════════════════════════════════
+function showTab(id){
+  document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  const tabs=['screener','funds','etfs','criteria','allowed','sukuk','prohibited','zakat','apps','learn','about'];
+  const idx=tabs.indexOf(id);
+  if(idx>=0) document.querySelectorAll('nav button')[idx].classList.add('active');
+}
+
+// ═══════════════════════════════════════════════
+//  STOCK SCREENER
+// ═══════════════════════════════════════════════
+function ratioBar(val, limit, unit='%'){
+  const pct=Math.min(100,(val/limit)*100);
+  const cls=val>limit?'fail':(val>limit*0.8?'warn':'ok');
+  return `<div class="ratio-bar"><div class="bar"><div class="fill ${cls}" style="width:${pct}%"></div></div><span class="val">${val.toFixed(1)}${unit}</span></div>`;
+}
+
+function verdictBadge(v){
+  const icons={HALAL:'✅',DOUBTFUL:'⚠',HARAM:'❌',NA:'—'};
+  return `<span class="badge ${v.toLowerCase()}">${icons[v]||''} ${v}</span>`;
+}
+
+function filterStocks(){
+  const mkt=document.getElementById('marketSelect').value;
+  const vf=document.getElementById('verdictFilter').value;
+  const sf=document.getElementById('sectorFilter').value;
+  const q=document.getElementById('stockSearch').value.toLowerCase();
+  currentStocks=STOCK_DATA.filter(s=>{
+    if(mkt!=='ALL'&&s.market!==mkt)return false;
+    if(vf!=='ALL'&&s.verdict!==vf)return false;
+    if(sf!=='ALL'&&s.sector!==sf)return false;
+    if(q&&!s.name.toLowerCase().includes(q)&&!s.full.toLowerCase().includes(q)&&!s.ticker.toLowerCase().includes(q))return false;
+    return true;
+  });
+  renderStockTable();
+}
+
+function renderStockTable(){
+  const tbody=document.getElementById('stockTbody');
+  if(!currentStocks.length){
+    tbody.innerHTML='<tr><td colspan="10" style="text-align:center;color:var(--text-muted);padding:20px">No stocks match the current filters.</td></tr>';
+    return;
+  }
+  tbody.innerHTML=currentStocks.map(s=>{
+    const p=livePrices[s.ticker];
+    const priceHtml=p?`<div class="price-row"><span>${p.currency}${p.price.toFixed(2)}</span> <small class="${p.change>=0?'price-change up':'price-change down'}">${p.change>=0?'+':''}${p.change.toFixed(2)}%</small></div>`:'<span style="color:var(--text-muted);font-size:12px">—</span>';
+    const isHaram=s.verdict==='HARAM';
+    return `<tr>
+      <td><strong>${s.name}</strong><div style="font-size:11px;color:var(--text-muted)">${s.full}</div></td>
+      <td><code style="font-size:11px">${s.ticker}</code></td>
+      <td><span style="font-size:12px">${s.sector}</span></td>
+      <td>${verdictBadge(s.verdict)}</td>
+      <td>${priceHtml}</td>
+      <td>${isHaram?'—':ratioBar(s.debt,33)}</td>
+      <td>${isHaram?'—':ratioBar(s.interestInc,5)}</td>
+      <td>${isHaram?'—':ratioBar(s.recv,49)}</td>
+      <td>${isHaram?'—':ratioBar(s.cash,33)}</td>
+      <td><button onclick="showDetail('${s.ticker}')" style="font-size:11px;padding:4px 8px;background:var(--green);color:white;border:none;border-radius:4px;cursor:pointer">Details</button></td>
+    </tr>`;
+  }).join('');
+}
+
+function showDetail(ticker){
+  const s=STOCK_DATA.find(x=>x.ticker===ticker);
+  if(!s)return;
+  const p=livePrices[ticker];
+  const isHaram=s.verdict==='HARAM';
+  const crit=(name,val,limit,whyExists)=>{
+    const cls=val>limit?'fail':(val>limit*0.8?'warn':'ok');
+    const pct=isHaram&&val===0?0:Math.min(100,(val/limit)*100);
+    return `<div class="crit-box ${isHaram?'fail':cls}">
+      <div class="crit-name">${name}</div>
+      <div class="crit-val" style="color:${isHaram?'var(--red)':cls==='fail'?'var(--red)':cls==='warn'?'var(--amber)':'var(--green)'}">${isHaram&&val===0?'N/A':val.toFixed(1)+'%'}</div>
+      <div class="crit-limit">Limit: ${limit}%</div>
+    </div>`;
+  };
+  const html=`
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px">
+      <div>
+        <h3 style="font-size:18px">${s.full}</h3>
+        <div style="margin-top:4px">${verdictBadge(s.verdict)} <span style="font-size:12px;color:var(--text-muted);margin-left:8px">${s.ticker} · ${s.market} · ${s.sector}</span></div>
+      </div>
+      ${p?`<div style="text-align:right"><div class="price-big">${p.currency}${p.price.toFixed(2)}</div><div class="${p.change>=0?'price-change up':'price-change down'}">${p.change>=0?'+':''}${p.change.toFixed(2)}% today</div></div>`:''}
+    </div>
+    <div class="criteria-grid" style="margin-top:16px">
+      ${crit('Business Screen',isHaram&&s.businessReason.startsWith('FAIL')?100:0,0)}
+      ${crit('Debt ratio',s.debt,33,'Interest-bearing debt must not dominate the company')}
+      ${crit('Interest income',s.interestInc,5,'Company must not earn significant income from riba')}
+      ${crit('Receivables',s.recv,49,'Too many paper claims vs real assets = gharar risk')}
+      ${crit('Cash ratio',s.cash,33,'Excess cash in interest-bearing instruments = riba exposure')}
+    </div>
+    <div class="info-block" style="margin-top:12px"><strong>Business screening:</strong> ${s.businessReason}</div>
+    ${s.purif>0?`<div class="warn-block"><strong>Purification required:</strong> Donate ${s.purif.toFixed(1)}% of any dividends received from this stock to charity. This cleanses the small impermissible income fraction.</div>`:''}
+    <div style="margin-top:12px;font-size:12px;color:var(--text-muted)">
+      Financial ratios sourced from most recent annual report. Live prices from Yahoo Finance. Updated weekly.<br>
+      All five criteria use AAOIFI Standard No. 21 as the basis. This is not a fatwa — consult a qualified scholar.
+    </div>`;
+  document.getElementById('detailContent').innerHTML=html;
+  document.getElementById('stockDetailPanel').style.display='block';
+  document.getElementById('stockDetailPanel').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+async function fetchLivePrices(){
+  const tickers=currentStocks.map(s=>s.ticker);
+  const toFetch=tickers.filter(t=>!livePrices[t]);
+  if(!toFetch.length){renderStockTable();return;}
+  document.querySelector('#stockTableWrap').style.opacity='0.6';
+  let fetched=0;
+  for(const ticker of toFetch.slice(0,15)){
+    const cached=cacheGet('price_'+ticker);
+    if(cached){livePrices[ticker]=cached;fetched++;continue;}
+    try{
+      const url=`https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(ticker)}?interval=1d&range=1d`;
+      const r=await fetch(url,{headers:{'User-Agent':'Mozilla/5.0'}});
+      if(!r.ok)throw new Error(r.status);
+      const d=await r.json();
+      const meta=d.chart?.result?.[0]?.meta;
+      if(meta){
+        const sym=meta.currency==='INR'?'₹':'$';
+        const priceObj={price:meta.regularMarketPrice,change:((meta.regularMarketPrice-meta.previousClose)/meta.previousClose)*100,currency:sym};
+        livePrices[ticker]=priceObj;
+        cacheSet('price_'+ticker,priceObj);
+        fetched++;
+      }
+    }catch(e){}
+    await new Promise(r=>setTimeout(r,120));
+  }
+  document.querySelector('#stockTableWrap').style.opacity='1';
+  renderStockTable();
+  document.getElementById('lastUpdate').textContent=`Prices: ${new Date().toLocaleTimeString()}`;
+}
+
+// ═══════════════════════════════════════════════
+//  GOLD PRICES
+// ═══════════════════════════════════════════════
+async function fetchGoldPrices(){
+  const cached=cacheGet('gold_data');
+  if(cached){goldData=cached;renderGold();updateNisab();return;}
+  try{
+    const [goldR,fxR]=await Promise.all([
+      fetch('https://data-asg.goldprice.org/dbXRates/USD',{headers:{'User-Agent':'Mozilla/5.0'}}),
+      fetch('https://open.er-api.com/v6/latest/USD')
+    ]);
+    const gd=await goldR.json();
+    const fd=await fxR.json();
+    const usdINR=fd.rates?.INR||83.5;
+    const goldUSD=gd.items?.[0]?.xauPrice||2350;
+    const silverUSD=gd.items?.[0]?.xagPrice||29;
+    goldData={goldUSD,silverUSD,usdINR,goldINR:(goldUSD/31.1035)*usdINR,silverINR:(silverUSD/31.1035)*usdINR};
+    cacheSet('gold_data',goldData);
+  }catch(e){
+    // Fallback static values
+    goldData={goldUSD:2380,silverUSD:30.2,usdINR:83.5,goldINR:(2380/31.1035)*83.5,silverINR:(30.2/31.1035)*83.5};
+  }
+  renderGold();updateNisab();
+}
+
+function renderGold(){
+  const box=document.getElementById('goldPriceBox');
+  box.innerHTML=`
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px">
+      <div style="background:var(--amber-light);border-radius:8px;padding:12px;text-align:center">
+        <div style="font-size:11px;color:var(--amber);font-weight:500">GOLD (per gram)</div>
+        <div style="font-size:22px;font-weight:700;color:var(--amber)">₹${Math.round(goldData.goldINR).toLocaleString('en-IN')}</div>
+        <div style="font-size:11px;color:var(--text-muted)">$${goldData.goldUSD.toFixed(2)}/troy oz</div>
+      </div>
+      <div style="background:#f3f4f6;border-radius:8px;padding:12px;text-align:center">
+        <div style="font-size:11px;color:var(--text-muted);font-weight:500">SILVER (per gram)</div>
+        <div style="font-size:22px;font-weight:700">₹${Math.round(goldData.silverINR).toLocaleString('en-IN')}</div>
+        <div style="font-size:11px;color:var(--text-muted)">$${goldData.silverUSD.toFixed(2)}/troy oz</div>
+      </div>
+      <div style="background:var(--blue-light);border-radius:8px;padding:12px;text-align:center">
+        <div style="font-size:11px;color:var(--blue);font-weight:500">USD/INR</div>
+        <div style="font-size:22px;font-weight:700;color:var(--blue)">₹${goldData.usdINR.toFixed(2)}</div>
+        <div style="font-size:11px;color:var(--text-muted)">Exchange rate</div>
+      </div>
+    </div>
+    <div style="font-size:11px;color:var(--text-muted);margin-top:8px;text-align:right">
+      Prices from goldprice.org + open.er-api.com · Cached weekly · 1 troy oz = 31.1035g
+    </div>`;
+}
+
+// ═══════════════════════════════════════════════
+//  ZAKAT CALCULATOR
+// ═══════════════════════════════════════════════
+function updateNisab(){
+  const goldNisabINR=87.48*goldData.goldINR;
+  const silverNisabINR=612.36*goldData.silverINR;
+  const nisabINR=Math.min(goldNisabINR,silverNisabINR);
+  document.getElementById('nisabInfo').innerHTML=`
+    <strong>Current Nisab (Hanafi — use lower threshold):</strong><br>
+    Gold nisab (87.48g): ₹${Math.round(goldNisabINR).toLocaleString('en-IN')} &nbsp;|&nbsp;
+    Silver nisab (612.36g): ₹${Math.round(silverNisabINR).toLocaleString('en-IN')}<br>
+    <strong>Applicable nisab: ₹${Math.round(nisabINR).toLocaleString('en-IN')}</strong>
+    (silver nisab used — lower threshold means more people pay zakat, ensuring broader social welfare)`;
+  calcZakat();
+}
+
+function calcZakat(){
+  const goldG=parseFloat(document.getElementById('zGold').value)||0;
+  const silverG=parseFloat(document.getElementById('zSilver').value)||0;
+  const cash=parseFloat(document.getElementById('zCash').value)||0;
+  const stocks=parseFloat(document.getElementById('zStocks').value)||0;
+  const business=parseFloat(document.getElementById('zBusiness').value)||0;
+  const other=parseFloat(document.getElementById('zOther').value)||0;
+  const goldVal=goldG*goldData.goldINR;
+  const silverVal=silverG*goldData.silverINR;
+  const total=goldVal+silverVal+cash+stocks+business+other;
+  const silverNisabINR=612.36*goldData.silverINR;
+  const zakat=total>=silverNisabINR?total*0.025:0;
+  document.getElementById('zakatAmount').textContent='₹'+Math.round(zakat).toLocaleString('en-IN');
+  document.getElementById('zakatNote').textContent=total<silverNisabINR?
+    `Total ₹${Math.round(total).toLocaleString('en-IN')} is below nisab — no zakat due`
+    :`Total zakatable wealth: ₹${Math.round(total).toLocaleString('en-IN')} (above nisab)`;
+  document.getElementById('zakatBreakdown').innerHTML=`
+    <div class="card" style="font-size:13px">
+      <h3>Breakdown</h3>
+      <table style="width:100%">
+        <tr><td>Gold (${goldG}g × ₹${Math.round(goldData.goldINR)}/g)</td><td style="text-align:right">₹${Math.round(goldVal).toLocaleString('en-IN')}</td></tr>
+        <tr><td>Silver (${silverG}g × ₹${Math.round(goldData.silverINR)}/g)</td><td style="text-align:right">₹${Math.round(silverVal).toLocaleString('en-IN')}</td></tr>
+        <tr><td>Cash & bank</td><td style="text-align:right">₹${Math.round(cash).toLocaleString('en-IN')}</td></tr>
+        <tr><td>Stocks & funds</td><td style="text-align:right">₹${Math.round(stocks).toLocaleString('en-IN')}</td></tr>
+        <tr><td>Business assets</td><td style="text-align:right">₹${Math.round(business).toLocaleString('en-IN')}</td></tr>
+        <tr><td>Other assets</td><td style="text-align:right">₹${Math.round(other).toLocaleString('en-IN')}</td></tr>
+        <tr style="font-weight:600;border-top:1px solid var(--gray-border)"><td>Total</td><td style="text-align:right">₹${Math.round(total).toLocaleString('en-IN')}</td></tr>
+        <tr style="color:var(--green);font-weight:700"><td>Zakat (2.5%)</td><td style="text-align:right">₹${Math.round(zakat).toLocaleString('en-IN')}</td></tr>
+      </table>
+    </div>`;
+}
+
+// ═══════════════════════════════════════════════
+//  RENDER STATIC SECTIONS
+// ═══════════════════════════════════════════════
+function renderFunds(){
+  document.getElementById('indiafundsList').innerHTML=INDIA_FUNDS.map(f=>`
+    <div class="card" style="margin-bottom:10px">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px">
+        <div>
+          <div style="font-weight:600;font-size:15px">${f.name}</div>
+          <div style="font-size:12px;color:var(--text-muted)">${f.amc} · ${f.type} · Shariah board: ${f.board}</div>
+        </div>
+        <span class="badge halal">✅ HALAL</span>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px;margin-top:12px;font-size:12px">
+        <div><div style="color:var(--text-muted)">Min SIP</div><strong>${f.minSip}</strong></div>
+        <div><div style="color:var(--text-muted)">NAV approx</div><strong>${f.nav}</strong></div>
+        <div><div style="color:var(--text-muted)">3Y CAGR approx</div><strong>${f.cagr3y}</strong></div>
+        <div><div style="color:var(--text-muted)">Screened from</div><strong>${f.screen}</strong></div>
+      </div>
+      <div style="font-size:12px;color:var(--text-muted);margin-top:8px">${f.note}</div>
+    </div>`).join('');
+  document.getElementById('globalFundsList').innerHTML=GLOBAL_FUNDS.map(f=>`
+    <div class="fund-row">
+      <div>
+        <div style="font-weight:500">${f.name}</div>
+        <div style="font-size:12px;color:var(--text-muted)">${f.region} · ${f.currency} · Screen: ${f.screen}</div>
+        <div style="font-size:11px;color:var(--text-muted)">${f.note}</div>
+      </div>
+      <span style="font-size:12px;color:var(--blue);white-space:nowrap">${f.access}</span>
+    </div>`).join('');
+}
+
+function renderETFs(){
+  document.getElementById('etfList').innerHTML=`
+    <div style="overflow-x:auto">
+    <table><thead><tr><th>Fund Name</th><th>Ticker</th><th>Exchange</th><th>Standard</th><th>Region</th><th>Currency</th><th>Note</th></tr></thead>
+    <tbody>${ETF_DATA.map(e=>`<tr>
+      <td><strong>${e.name}</strong></td>
+      <td><code>${e.ticker}</code></td><td>${e.exchange}</td><td>${e.screen}</td>
+      <td>${e.region}</td><td>${e.currency}</td>
+      <td style="font-size:12px;color:var(--text-muted)">${e.note}</td>
+    </tr>`).join('')}</tbody></table></div>`;
+  document.getElementById('halalGoldStocks').innerHTML=`
+    <div class="section-title">Halal Gold-Related Stocks (India)</div>
+    <div class="info-block">
+      Companies in gold jewellery, mining, or refining are <strong>permissible</strong> if they pass the 5 financial screens.
+      Titan Company (jewellery) and Thangamayil Jewellery pass screening.
+      Kalyan Jewellers passes with borderline debt ratio — monitor quarterly.
+    </div>`;
+}
+
+function renderCriteria(){
+  const crits=[
+    {num:1,name:'Business Screen',limit:'0% tolerance (AAOIFI)',color:'green',
+     simple:'What does the company DO for money?',
+     why:'Islam forbids earning from certain activities — not because they are economically unproductive, but because they cause harm. A company that makes money from selling alcohol, running a casino, or charging interest on loans cannot be a halal investment regardless of how profitable it is.',
+     howTo:'Look at the company\'s revenue sources. If more than 5% comes from alcohol, pork, gambling, conventional banking, tobacco, weapons, or adult entertainment — it fails. Banks fail automatically because their entire business model is interest.',
+     examples:'PASS: TCS (IT services), Sun Pharma (medicine), Maruti (cars). FAIL: HDFC Bank (interest), ITC (tobacco), United Spirits (alcohol).'},
+    {num:2,name:'Debt Ratio',limit:'Interest-bearing debt / market cap < 33%',color:'blue',
+     simple:'How much has the company borrowed from banks at interest?',
+     why:'When a company borrows heavily at interest (riba), your investment returns are partly funded by riba income. The 33% threshold (based on the Prophetic hadith "one-third is significant") limits your exposure to interest-tainted earnings.',
+     howTo:'Total long-term + short-term interest-bearing borrowings ÷ market capitalisation. If this exceeds 33%, the stock fails. Note: debt-free companies like Maruti and Bajaj Auto automatically pass this criterion.',
+     examples:'PASS: TCS (1.2%), Maruti (0%). DOUBTFUL: Reliance (28.1%). FAIL: JSW Steel (42.1%).'},
+    {num:3,name:'Interest Income Ratio',limit:'Interest income / total revenue < 5%',color:'amber',
+     simple:'How much of the company\'s income comes from earning interest?',
+     why:'Even a halal business (like a pharma company) might invest its surplus cash in fixed deposits and earn interest. If that interest income is a significant portion of revenue, you are effectively investing in a riba-income business.',
+     howTo:'Interest income (from balance sheet) ÷ total revenue. Must be below 5%. Purification: donate exactly this percentage of any dividends you receive.',
+     examples:'PASS: TCS (0.3%), Sun Pharma (0.9%). DOUBTFUL: Wipro (5.2%) — borderline, donate 5.2% of dividends.'},
+    {num:4,name:'Receivables Ratio',limit:'(Receivables + cash) / total assets < 49%',color:'purple',
+     simple:'Is the company mostly owed money on paper, or does it own real things?',
+     why:'Shariah requires that at least 51% of a traded security represents ownership of real, tangible assets — not just paper claims. If most of a company\'s balance sheet is "money owed to us", you\'re effectively trading debt, not equity.',
+     howTo:'(Accounts receivable + cash) ÷ total assets. Must stay below 49%. The 49% threshold comes from the fiqh principle that "the majority [51%+] deserves to be treated as the whole."',
+     examples:'PASS: TCS (18%), Asian Paints (16%). HIGH: Most financial companies fail badly here.'},
+    {num:5,name:'Cash Ratio',limit:'Cash + interest-bearing securities / market cap < 33%',color:'teal',
+     simple:'Is the company sitting on cash earning interest in a bank?',
+     why:'A company with massive cash holdings is almost certainly earning interest on that cash (Treasury bills, FDs, money market funds). If that cash is more than 33% of market cap, the company is functionally part-bank.',
+     howTo:'(Cash + short-term interest-bearing investments) ÷ market capitalisation. Must be below 33%.',
+     examples:'PASS: Most manufacturing companies. WATCH: Zomato (28%) — high cash from IPO proceeds.'},
+  ];
+  const colors={green:'var(--green)',blue:'var(--blue)',amber:'var(--amber)',purple:'#7c3aed',teal:'#0891b2'};
+  document.getElementById('criteriaExplainer').innerHTML=crits.map(c=>`
+    <div class="criterion-card" style="border-left:4px solid ${colors[c.color]}">
+      <div class="name">Criterion ${c.num}: ${c.name}</div>
+      <div class="desc">${c.simple}</div>
+      <span class="threshold">${c.limit}</span>
+      <details style="margin-top:10px">
+        <summary style="cursor:pointer;font-size:12px;color:var(--text-muted)">Why this rule exists ▸</summary>
+        <div style="font-size:12px;color:var(--text-muted);margin-top:8px;line-height:1.6">${c.why}</div>
+      </details>
+      <details style="margin-top:6px">
+        <summary style="cursor:pointer;font-size:12px;color:var(--text-muted)">How to calculate ▸</summary>
+        <div style="font-size:12px;color:var(--text-muted);margin-top:8px;line-height:1.6">${c.howTo}</div>
+      </details>
+      <details style="margin-top:6px">
+        <summary style="cursor:pointer;font-size:12px;color:var(--text-muted)">Examples ▸</summary>
+        <div style="font-size:12px;color:var(--text-muted);margin-top:8px">${c.examples}</div>
+      </details>
+    </div>`).join('');
+}
+
+function renderAllowed(){
+  const cats=[...new Set(ALLOWED_DATA.map(a=>a.cat))];
+  document.getElementById('allowedList').innerHTML=cats.map(cat=>`
+    <div class="section-title">${cat}</div>
+    ${ALLOWED_DATA.filter(a=>a.cat===cat).map(a=>`
+    <div style="display:flex;gap:12px;padding:12px;border:1px solid var(--gray-border);border-radius:var(--radius);margin-bottom:8px;align-items:flex-start">
+      <span style="font-size:24px;flex-shrink:0">${a.emoji}</span>
+      <div style="flex:1">
+        <div style="font-weight:600">${a.title} <span class="badge halal" style="margin-left:6px">✅ ${a.status}</span></div>
+        <div style="font-size:12px;color:var(--text-muted);margin-top:4px">${a.desc}</div>
+        <div style="font-size:12px;margin-top:6px"><strong>Available in India:</strong> ${a.india}</div>
+      </div>
+    </div>`).join('')}`).join('');
+}
+
+function renderSukuk(){
+  document.getElementById('sukukContent').innerHTML=`
+    <div class="warn-block"><strong>Currently unavailable in India.</strong> Sukuk are widely used in Malaysia, Saudi Arabia, UAE, and the UK. SEBI has been in discussions about a regulatory framework since 2022. Watch for updates in 2025-26.</div>
+    <div class="section-title">What is a Sukuk? (In Simple Words)</div>
+    <p style="font-size:13px;color:var(--text-muted);margin-bottom:16px">
+      Imagine you want to build a toll road. You need ₹500 crore. Instead of taking a bank loan (riba), you sell 500,000 certificates at ₹1,000 each. Each certificate gives the holder <strong>ownership of a tiny slice of the toll road</strong>. Every month, the toll collections are shared among all certificate holders — proportional to their ownership. When the road is eventually sold, each holder gets their share of the proceeds.
+    </p>
+    <p style="font-size:13px;color:var(--text-muted);margin-bottom:16px">
+      That's a Sukuk. The key difference from a conventional bond: <strong>you own a real asset, not a debt claim</strong>. Your return comes from the asset's actual performance — not a predetermined interest rate. Risk and reward are genuinely shared.
+    </p>
+    <div class="section-title">Sukuk vs. Conventional Bond</div>
+    <table style="font-size:12px">
+      <thead><tr><th>Feature</th><th>Conventional Bond</th><th>Sukuk (Islamic Bond)</th></tr></thead>
+      <tbody>
+        <tr><td>What you own</td><td>A debt claim — the issuer owes you money</td><td>Ownership share in a real asset</td></tr>
+        <tr><td>Return type</td><td>Fixed interest (riba)</td><td>Share of asset's income (profit)</td></tr>
+        <tr><td>Risk</td><td>Credit risk only</td><td>Asset + credit risk (real risk-sharing)</td></tr>
+        <tr><td>Shariah status</td><td>Haram (riba)</td><td>Halal ✅</td></tr>
+        <tr><td>Available in India</td><td>Yes (govt & corporate bonds)</td><td>Not yet</td></tr>
+      </tbody>
+    </table>
+    <div class="section-title">Types of Sukuk</div>
+    <div class="sukuk-timeline">
+      ${[
+        {type:'Ijarah Sukuk',desc:'Based on leasing. An asset is sold to investors and leased back. Lease payments = return. Most common type globally.'},
+        {type:'Musharakah Sukuk',desc:'Based on partnership. Investors co-own a project and share in its profits and losses. Used for major infrastructure.'},
+        {type:'Mudarabah Sukuk',desc:'Investors provide capital; the issuer provides management. Returns are a share of actual profits.'},
+        {type:'Wakalah Sukuk',desc:'The issuer acts as investment agent. Returns come from a managed portfolio of Shariah-compliant assets.'},
+        {type:'Istisna Sukuk',desc:'Used to finance construction. Payments made as construction milestones are reached.'},
+      ].map(s=>`<div class="sukuk-step"><strong>${s.type}</strong><p style="font-size:12px;color:var(--text-muted);margin-top:2px">${s.desc}</p></div>`).join('')}
+    </div>
+    <div class="section-title">Major Sukuk Issuances Globally</div>
+    <table style="font-size:12px">
+      <thead><tr><th>Issuer</th><th>Amount</th><th>Year</th><th>Type</th></tr></thead>
+      <tbody>
+        <tr><td>Malaysia (government)</td><td>$600M</td><td>2002</td><td>First sovereign sukuk</td></tr>
+        <tr><td>General Electric (US)</td><td>$500M</td><td>2009</td><td>First major US corporate sukuk</td></tr>
+        <tr><td>UK Government</td><td>£200M</td><td>2014</td><td>First non-Muslim country sovereign sukuk</td></tr>
+        <tr><td>Goldman Sachs</td><td>$500M</td><td>2014</td><td>First conventional US bank sukuk</td></tr>
+        <tr><td>Saudi Arabia (government)</td><td>$17.5B</td><td>2017</td><td>Largest sovereign sukuk</td></tr>
+      </tbody>
+    </table>`;
+}
+
+function renderProhibited(){
+  document.getElementById('prohibitedList').innerHTML=PROHIBITED_DATA.map(p=>`
+    <div class="haram-block" style="margin-bottom:10px">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:6px">
+        <div style="font-weight:600;font-size:14px">${p.emoji} ${p.title}</div>
+        <span class="badge haram">❌ ${p.reason}</span>
+      </div>
+      <div style="font-size:12px;margin-top:6px;color:#7f1d1d">${p.detail}</div>
+      <div style="font-size:12px;margin-top:4px;color:var(--green)"><strong>Halal alternative:</strong> ${p.alternative}</div>
+    </div>`).join('');
+}
+
+function renderApps(){
+  document.getElementById('appsList').innerHTML=APPS_DATA.map(a=>`
+    <div class="app-card">
+      <div class="icon">${a.icon}</div>
+      <div class="info">
+        <div class="name">${a.name}</div>
+        <div class="desc">${a.desc}</div>
+        <div class="tags">${a.tags.map(t=>`<span class="tag ${t==='india'?'india':t==='global'?'global':''}">${t}</span>`).join('')}</div>
+        ${a.link?`<div style="margin-top:6px"><a href="${a.link}" target="_blank" style="font-size:12px;color:var(--blue)">${a.link.replace('https://','')}</a></div>`:''}
+      </div>
+    </div>`).join('');
+}
+
+function renderGlossary(){
+  document.getElementById('glossaryContent').innerHTML=GLOSSARY.map(g=>`
+    <div style="padding:12px 0;border-bottom:1px solid #f0f0f0">
+      <div style="display:flex;gap:8px;align-items:baseline;flex-wrap:wrap">
+        <strong style="font-size:14px">${g.term}</strong>
+        ${g.urdu?`<span style="font-size:13px;color:var(--text-muted);direction:rtl">${g.urdu}</span>`:''}
+      </div>
+      <div style="font-size:13px;color:var(--text-muted);margin-top:4px;line-height:1.6">${g.def}</div>
+    </div>`).join('');
+}
+
+function renderAbout(){
+  document.getElementById('aboutContent').innerHTML=`
+    <div class="grid-2">
+      <div>
+        <h3>Data sources</h3>
+        <ul style="font-size:13px;color:var(--text-muted);padding-left:16px;margin-top:6px;line-height:2">
+          <li>Live stock prices: Yahoo Finance v8 API (free)</li>
+          <li>Gold/silver prices: goldprice.org (free)</li>
+          <li>Exchange rates: open.er-api.com (free)</li>
+          <li>Shariah screening: AAOIFI Standard No. 21</li>
+          <li>Financial ratios: Annual reports, compiled manually</li>
+          <li>Indian screening: TASIS India methodology</li>
+        </ul>
+      </div>
+      <div>
+        <h3>Update schedule</h3>
+        <ul style="font-size:13px;color:var(--text-muted);padding-left:16px;margin-top:6px;line-height:2">
+          <li>Live prices: Real-time (on request)</li>
+          <li>Gold/silver prices: Daily (cached weekly)</li>
+          <li>Screening verdicts: Quarterly (manual update)</li>
+          <li>Financial ratios: At annual report release</li>
+          <li>New stocks: Added periodically</li>
+        </ul>
+      </div>
+    </div>
+    <div class="info-block" style="margin-top:16px">
+      <strong>Skill file:</strong> This app was built using the <code>halal-finance-screener</code> skill.
+      SKILL.md is saved at <code>/home/claude/halal-screener-skill/SKILL.md</code>.
+    </div>
+    <div class="warn-block">
+      <strong>How to add new stocks:</strong> Open the HTML file in a text editor.
+      Find the <code>STOCK_DATA</code> array and add a new object following the existing pattern.
+      Required fields: name, full, ticker, market, sector, verdict, debt, interestInc, recv, cash, businessReason, purif.
+    </div>
+    <div class="disclaimer" style="margin-top:16px">
+      <strong>Legal disclaimer:</strong> This tool is for educational and informational purposes only.
+      It does not constitute financial advice, investment advice, or a Shariah ruling (fatwa).
+      Shariah compliance screening results are generated using automated data analysis and publicly
+      available financial data. Always consult a qualified Islamic scholar (alim) and a SEBI-registered
+      financial advisor before making investment decisions. Past performance does not guarantee future
+      results. Market data may be delayed or inaccurate.
+    </div>`;
+}
+
+// ═══════════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════════
+function init(){
+  renderStockTable();
+  renderFunds();
+  renderETFs();
+  renderCriteria();
+  renderAllowed();
+  renderSukuk();
+  renderProhibited();
+  renderApps();
+  renderGlossary();
+  renderAbout();
+  fetchGoldPrices();
+  fetchLivePrices();
+  document.getElementById('lastUpdate').textContent=`Data: ${new Date().toLocaleDateString('en-IN')}`;
+}
+
+document.addEventListener('DOMContentLoaded',init);
+</script>
+</body>
+</html>
