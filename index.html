@@ -46,10 +46,15 @@ nav button.active { color: var(--green); border-bottom-color: var(--green);
 .controls { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; }
 .controls select, .controls input { padding: 8px 12px; border: 1px solid var(--gray-border);
   border-radius: var(--radius); font-size: 13px; background: white; }
-.controls input { min-width: 200px; }
+.controls select { flex: 1; min-width: 120px; }
+.controls input { flex: 1; min-width: 140px; }
 .controls button { padding: 8px 16px; background: var(--green); color: white;
-  border: none; border-radius: var(--radius); cursor: pointer; font-size: 13px; }
+  border: none; border-radius: var(--radius); cursor: pointer; font-size: 13px; white-space: nowrap; }
 .controls button:hover { background: var(--green-mid); }
+@media(max-width:500px) {
+  .controls { flex-direction: column; }
+  .controls select, .controls input, .controls button { width: 100%; min-width: 0; }
+}
 table { width: 100%; border-collapse: collapse; font-size: 13px; }
 th { background: var(--gray-light); padding: 10px 12px; text-align: left;
   font-weight: 500; border-bottom: 1px solid var(--gray-border); font-size: 12px; }
@@ -85,6 +90,7 @@ tr:hover td { background: #fafafa; }
 .price-change.down { color: var(--red); }
 .meta { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
 .zakat-input { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+@media(max-width:500px) { .zakat-input { grid-template-columns: 1fr; } }
 .zakat-input label { display: block; font-size: 12px; color: var(--text-muted); margin-bottom: 4px; }
 .zakat-input input { width: 100%; padding: 8px 10px; border: 1px solid var(--gray-border);
   border-radius: var(--radius); font-size: 14px; }
@@ -130,6 +136,7 @@ tr:hover td { background: #fafafa; }
 .disclaimer { font-size: 11px; color: var(--text-muted); background: #f9fafb;
   border: 1px solid var(--gray-border); border-radius: var(--radius);
   padding: 10px; margin-top: 16px; }
+#stockTableWrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
 </style>
 </head>
 <body>
@@ -706,7 +713,7 @@ async function fetchLivePrices(){
     if(cached){livePrices[ticker]=cached;fetched++;continue;}
     try{
       const url=`https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(ticker)}?interval=1d&range=1d`;
-      const r=await fetch(url,{headers:{'User-Agent':'Mozilla/5.0'}});
+      const r=await fetch(url);
       if(!r.ok)throw new Error(r.status);
       const d=await r.json();
       const meta=d.chart?.result?.[0]?.meta;
@@ -722,7 +729,11 @@ async function fetchLivePrices(){
   }
   document.querySelector('#stockTableWrap').style.opacity='1';
   renderStockTable();
-  document.getElementById('lastUpdate').textContent=`Prices: ${new Date().toLocaleTimeString()}`;
+  if(fetched>0){
+    document.getElementById('lastUpdate').textContent=`Prices: ${new Date().toLocaleTimeString()}`;
+  } else {
+    document.getElementById('lastUpdate').textContent='Live prices unavailable — check your broker app';
+  }
 }
 
 // ═══════════════════════════════════════════════
@@ -733,7 +744,7 @@ async function fetchGoldPrices(){
   if(cached){goldData=cached;renderGold();updateNisab();return;}
   try{
     const [goldR,fxR]=await Promise.all([
-      fetch('https://data-asg.goldprice.org/dbXRates/USD',{headers:{'User-Agent':'Mozilla/5.0'}}),
+      fetch('https://data-asg.goldprice.org/dbXRates/USD'),
       fetch('https://open.er-api.com/v6/latest/USD')
     ]);
     const gd=await goldR.json();
