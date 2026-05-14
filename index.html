@@ -21,7 +21,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   font-size: 14px; color: var(--text); background: #0a0a0a; line-height: 1.5; }
 header { background: #0f0f0f; color: white; padding: 14px 20px;
   display: flex; align-items: center; gap: 12px; border-bottom: 1px solid var(--green); }
-header h1 { font-size: 18px; font-weight: 700; color: var(--green); letter-spacing: -.3px; }
+header h1 { font-size: 26px; font-weight: 700; color: var(--green); letter-spacing: -.5px; }
 header span { font-size: 12px; opacity: .6; }
 nav { background: #0f0f0f; border-bottom: 1px solid var(--gray-border);
   display: flex; overflow-x: auto; padding: 0 12px; }
@@ -1056,15 +1056,6 @@ function renderAbout(){
           <li>New stocks: Added periodically</li>
         </ul>
       </div>
-    </div>
-    <div class="info-block" style="margin-top:16px">
-      <strong>Skill file:</strong> This app was built using the <code>halal-finance-screener</code> skill.
-      SKILL.md is saved at <code>/home/claude/halal-screener-skill/SKILL.md</code>.
-    </div>
-    <div class="warn-block">
-      <strong>How to add new stocks:</strong> Open the HTML file in a text editor.
-      Find the <code>STOCK_DATA</code> array and add a new object following the existing pattern.
-      Required fields: name, full, ticker, market, sector, verdict, debt, interestInc, recv, cash, businessReason, purif.
     </div>
     <div class="disclaimer" style="margin-top:16px">
       <strong>Legal disclaimer:</strong> This tool is for educational and informational purposes only.
