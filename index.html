@@ -204,6 +204,17 @@ h1, h2, h3, .wt-title, .home-greeting h2, .hc-title, .card h2, .card h3,
 .back-btn.visible { display: flex; }
 .back-btn:hover { border-color: var(--green); color: var(--green); }
 
+/* ── USER CHIP ── */
+.user-chip { display:flex; align-items:center; gap:6px; background:var(--green-light);
+  border:1px solid var(--green); border-radius:20px; padding:4px 12px; cursor:pointer;
+  font-size:12px; color:var(--green); font-family:'Satoshi','Inter',sans-serif; font-weight:600; }
+.user-chip:hover { background: #0a3d1a; }
+
+/* ── ALLOWED ITEM LINK ── */
+.allowed-link { cursor:pointer; transition:border-color .15s; }
+.allowed-link:hover { border-color:var(--green) !important; }
+.allowed-link .go-arrow { font-size:11px; color:var(--green); font-weight:600; margin-top:4px; display:inline-block; }
+
 /* ── RESOURCES GRID ── */
 .resources-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 4px; }
 .res-card { background: var(--surface-2); border: 1px solid var(--gray-border); border-radius: 10px;
@@ -222,8 +233,9 @@ h1, h2, h3, .wt-title, .home-greeting h2, .hc-title, .card h2, .card h3,
     <h1 onclick="goHome()" style="cursor:pointer" title="Back to Home">Filtrd</h1>
     <span>by Paisa Paisa Girl · Ethical investing for India</span>
   </div>
-  <div style="margin-left:auto;display:flex;align-items:center;gap:12px">
+  <div style="margin-left:auto;display:flex;align-items:center;gap:10px">
     <button class="back-btn" id="backBtn" onclick="goHome()">← Home</button>
+    <div id="userChip" class="user-chip" style="display:none" onclick="handleUserChipClick()" title="Your profile"></div>
     <div style="font-size:11px;color:#555" id="lastUpdate"></div>
   </div>
 </header>
@@ -287,6 +299,30 @@ h1, h2, h3, .wt-title, .home-greeting h2, .hc-title, .card h2, .card h3,
   <div class="wt-modal">
     <button class="wt-close" onclick="closeWalkthrough()">✕</button>
     <div id="wtContent"></div>
+  </div>
+</div>
+
+<!-- SIGNUP MODAL -->
+<div class="wt-overlay" id="signupOverlay" onclick="if(event.target===this)skipSignup()">
+  <div class="wt-modal" style="max-width:420px">
+    <button class="wt-close" onclick="skipSignup()">✕</button>
+    <span class="wt-icon">🌙</span>
+    <div class="wt-title">Join Filtrd — Free</div>
+    <div class="wt-body">Get weekly halal investing insights from Paisa Paisa Girl, straight to your inbox. No spam, ever. Unsubscribe anytime.</div>
+    <div style="margin-bottom:12px">
+      <label style="font-size:12px;color:var(--text-muted);display:block;margin-bottom:4px">First name</label>
+      <input type="text" id="signupName" placeholder="Your name" style="width:100%;padding:9px 12px;border:1px solid var(--gray-border);border-radius:var(--radius);background:var(--surface-2);color:var(--text);font-size:14px;font-family:inherit">
+    </div>
+    <div style="margin-bottom:20px">
+      <label style="font-size:12px;color:var(--text-muted);display:block;margin-bottom:4px">Email address</label>
+      <input type="email" id="signupEmail" placeholder="you@example.com" style="width:100%;padding:9px 12px;border:1px solid var(--gray-border);border-radius:var(--radius);background:var(--surface-2);color:var(--text);font-size:14px;font-family:inherit">
+    </div>
+    <button onclick="submitSignup()" style="width:100%;padding:11px;background:var(--green);color:white;border:none;border-radius:var(--radius);font-size:14px;font-weight:700;cursor:pointer;font-family:'Satoshi','Inter',sans-serif;margin-bottom:12px">
+      Join &amp; Continue →
+    </button>
+    <div style="text-align:center">
+      <span onclick="skipSignup()" style="font-size:12px;color:var(--text-muted);cursor:pointer;text-decoration:underline">Skip for now</span>
+    </div>
   </div>
 </div>
 
@@ -685,15 +721,15 @@ const ETF_DATA = [
 //  DATA: ALLOWED INVESTMENTS
 // ═══════════════════════════════════════════════
 const ALLOWED_DATA = [
-  {cat:'Equities',title:'Shariah-screened stocks',emoji:'📈',desc:'Shares in companies that pass the 5-criterion Shariah screen. Risk is shared between investor and company — exactly as Islam requires.',india:'Yes — NSE/BSE via Zerodha, Groww, etc.',status:'HALAL'},
-  {cat:'Equities',title:'Islamic mutual funds',emoji:'🏦',desc:'Pooled investment in Shariah-screened stocks managed by a professional fund house with a Shariah board.',india:'Yes — Tata Ethical, Taurus Ethical, Quantum Ethical',status:'HALAL'},
+  {cat:'Equities',title:'Shariah-screened stocks',emoji:'📈',desc:'Shares in companies that pass the 5-criterion Shariah screen. Risk is shared between investor and company — exactly as Islam requires.',india:'Yes — NSE/BSE via Zerodha, Groww, etc.',status:'HALAL',link:'screener'},
+  {cat:'Equities',title:'Islamic mutual funds',emoji:'🏦',desc:'Pooled investment in Shariah-screened stocks managed by a professional fund house with a Shariah board.',india:'Yes — Tata Ethical, Taurus Ethical, Quantum Ethical',status:'HALAL',link:'funds'},
   {cat:'Real Assets',title:'Physical gold & silver',emoji:'🥇',desc:'Buying physical metal with immediate delivery. No paper or digital receipts — only actual coins/bars stored safely.',india:'Yes — jewellers, banks, certified refineries',status:'HALAL'},
   {cat:'Real Assets',title:'Real estate (residential/commercial)',emoji:'🏠',desc:'Buying property for rental income or capital appreciation. No interest-based mortgage — use halal financing or pay cash.',india:'Yes',status:'HALAL'},
   {cat:'Real Assets',title:'Agricultural land / farming',emoji:'🌾',desc:'Islam strongly encourages agriculture. Income from farming land is halal and may have favourable zakat treatment.',india:'Yes',status:'HALAL'},
   {cat:'Business',title:'Direct business ownership',emoji:'🏪',desc:'Starting or investing in a business that operates entirely on halal principles. Zero tolerance for haram activities or interest-based debt in the business.',india:'Yes',status:'HALAL'},
   {cat:'Business',title:'Halal dropshipping (Ju\'ala contract)',emoji:'🛒',desc:'Running an online store where you market goods for a supplier and keep the margin above their floor price. Structured as a Ju\'ala (reward contract) not a sale.',india:'Yes',status:'HALAL'},
   {cat:'Business',title:'Halal private equity / angel investing',emoji:'💼',desc:'Investing in unlisted startups or private companies that are 100% halal in operations and financing (zero interest-bearing debt).',india:'Yes',status:'HALAL'},
-  {cat:'Finance',title:'Sukuk (Islamic bonds)',emoji:'📜',desc:'Asset-backed certificates that represent ownership of a real asset and return is from the asset\'s productive use — not interest. Not yet available in India.',india:'Not yet',status:'HALAL'},
+  {cat:'Finance',title:'Sukuk (Islamic bonds)',emoji:'📜',desc:'Asset-backed certificates that represent ownership of a real asset and return is from the asset\'s productive use — not interest. Not yet available in India.',india:'Not yet',status:'HALAL',link:'sukuk'},
   {cat:'Finance',title:'Musharakah (partnership)',emoji:'🤝',desc:'Profit-and-loss sharing partnership. Both parties invest and share both gains and losses. The classic Islamic business structure.',india:'Yes — informal',status:'HALAL'},
   {cat:'Finance',title:'Mudarabah (trust finance)',emoji:'💡',desc:'One party provides capital, the other provides skill/labour. Profits shared at pre-agreed ratio; losses borne by capital provider only.',india:'Yes — informal',status:'HALAL'},
   {cat:'Finance',title:'Murabaha (cost-plus sale)',emoji:'🏷',desc:'Bank/financier buys the asset and resells to you at disclosed markup with deferred payment. Not a loan — a sale. Used for car and home financing in Islamic banks.',india:'Limited — some NBFCs',status:'HALAL'},
@@ -1154,10 +1190,11 @@ function renderAllowed(){
   document.getElementById('allowedList').innerHTML=cats.map(cat=>`
     <div class="section-title">${cat}</div>
     ${ALLOWED_DATA.filter(a=>a.cat===cat).map(a=>`
-    <div style="display:flex;gap:12px;padding:12px;border:1px solid var(--gray-border);border-radius:var(--radius);margin-bottom:8px;align-items:flex-start">
+    <div class="${a.link?'allowed-link':''}" style="display:flex;gap:12px;padding:12px;border:1px solid var(--gray-border);border-radius:var(--radius);margin-bottom:8px;align-items:flex-start"
+      ${a.link?`onclick="showSection('${a.link}')" title="Open ${a.title}"`:''}>
       <span style="font-size:24px;flex-shrink:0">${a.emoji}</span>
       <div style="flex:1">
-        <div style="font-weight:600">${a.title} <span class="badge halal" style="margin-left:6px">✅ ${a.status}</span></div>
+        <div style="font-weight:600">${a.title} <span class="badge halal" style="margin-left:6px">✅ ${a.status}</span>${a.link?'<span style="margin-left:8px;font-size:11px;color:var(--green-heading);font-weight:600">Open →</span>':''}</div>
         <div style="font-size:12px;color:var(--text-muted);margin-top:4px">${a.desc}</div>
         <div style="font-size:12px;margin-top:6px"><strong>Available in India:</strong> ${a.india}</div>
       </div>
@@ -1294,6 +1331,7 @@ function init(){
   renderGlossary();
   renderAbout();
   fetchGoldPrices();
+  initUser();
   document.getElementById('lastUpdate').textContent=`Date: ${new Date().toLocaleDateString('en-IN')}`;
   // Start on home screen
   document.getElementById('mainNav').style.display = 'none';
@@ -1480,8 +1518,75 @@ function renderWalkthrough() {
 
 function wtNext() { wtStep++; renderWalkthrough(); }
 function wtPrev() { wtStep--; renderWalkthrough(); }
-function wtFinish() { closeWalkthrough(); showSection(WALKTHROUGHS[wtTopic].tab); }
+function wtFinish() {
+  closeWalkthrough();
+  const tab = WALKTHROUGHS[wtTopic].tab;
+  const user = JSON.parse(localStorage.getItem('filtrd_user') || 'null');
+  if (!user) { pendingTab = tab; showSignupModal(); }
+  else { showSection(tab); }
+}
 function closeWalkthrough() { document.getElementById('wtOverlay').classList.remove('active'); }
+
+// ═══════════════════════════════════════════════
+//  SIGNUP / USER
+// ═══════════════════════════════════════════════
+let pendingTab = null;
+
+function showSignupModal() {
+  document.getElementById('signupOverlay').classList.add('active');
+  setTimeout(() => document.getElementById('signupName').focus(), 100);
+}
+
+function skipSignup() {
+  document.getElementById('signupOverlay').classList.remove('active');
+  if (pendingTab) { showSection(pendingTab); pendingTab = null; }
+}
+
+function submitSignup() {
+  const name = document.getElementById('signupName').value.trim();
+  const email = document.getElementById('signupEmail').value.trim();
+  if (!email || !email.includes('@')) {
+    document.getElementById('signupEmail').style.borderColor = 'var(--red)';
+    document.getElementById('signupEmail').focus();
+    return;
+  }
+  const user = { name: name || 'Reader', email, joinedAt: new Date().toISOString() };
+  localStorage.setItem('filtrd_user', JSON.stringify(user));
+  updateUserChip(user.name);
+  trySubstackSubscribe(user.name, email);
+  document.getElementById('signupOverlay').classList.remove('active');
+  if (pendingTab) { showSection(pendingTab); pendingTab = null; }
+}
+
+function trySubstackSubscribe(name, email) {
+  // Replace 'paisapaisagirl' below with your actual Substack publication slug
+  const slug = 'paisapaisagirl';
+  fetch(`https://${slug}.substack.com/api/v1/free`, {
+    method: 'POST', mode: 'no-cors',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: new URLSearchParams({ email, first_name: name })
+  }).catch(() => {});
+}
+
+function updateUserChip(name) {
+  const chip = document.getElementById('userChip');
+  chip.innerHTML = `👤 ${name||'You'}`;
+  chip.style.display = 'flex';
+}
+
+function handleUserChipClick() {
+  const user = JSON.parse(localStorage.getItem('filtrd_user') || 'null');
+  if (!user) return;
+  if (confirm(`Signed in as ${user.name} (${user.email}).\n\nSign out?`)) {
+    localStorage.removeItem('filtrd_user');
+    document.getElementById('userChip').style.display = 'none';
+  }
+}
+
+function initUser() {
+  const user = JSON.parse(localStorage.getItem('filtrd_user') || 'null');
+  if (user) updateUserChip(user.name);
+}
 
 function showResources() {
   document.getElementById('wtContent').innerHTML = `
