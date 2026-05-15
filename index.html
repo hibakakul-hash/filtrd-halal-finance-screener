@@ -10,7 +10,7 @@
 <link href="https://api.fontshare.com/v2/css?f[]=satoshi@700,600,500,400&display=swap" rel="stylesheet">
 <style>
 :root {
-  --green: #22c55e; --green-light: #052e16; --green-mid: #16a34a;
+  --green: #16a34a; --green-light: #052e16; --green-mid: #15803d; --green-heading: #0ea855;
   --amber: #f59e0b; --amber-light: #431407; --amber-bg: #1c0f00;
   --red: #f87171; --red-light: #450a0a;
   --blue: #60a5fa; --blue-light: #0c1a3a;
@@ -25,13 +25,13 @@ body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans
   font-size: 14px; color: var(--text); background: #0a0a0a; line-height: 1.5; }
 header { background: #0f0f0f; color: white; padding: 14px 20px;
   display: flex; align-items: center; gap: 12px; border-bottom: 1px solid var(--green); }
-header h1 { font-size: 26px; font-weight: 700; color: var(--green); letter-spacing: -.5px; }
+header h1 { font-size: 26px; font-weight: 700; color: var(--green-heading); letter-spacing: -.5px; }
 header span { font-size: 12px; opacity: .6; }
 nav { background: #0f0f0f; border-bottom: 1px solid var(--gray-border);
-  display: flex; overflow-x: auto; padding: 0 12px; }
-nav button { padding: 10px 14px; border: none; background: none; cursor: pointer;
-  font-size: 13px; color: var(--text-muted); white-space: nowrap;
-  border-bottom: 2px solid transparent; transition: .15s; color: #888; }
+  display: flex; flex-wrap: wrap; padding: 0 8px; }
+nav button { padding: 7px 10px; border: none; background: none; cursor: pointer;
+  font-size: 12px; color: #888; white-space: nowrap;
+  border-bottom: 2px solid transparent; transition: .15s; }
 nav button:hover { color: var(--green); }
 nav button.active { color: var(--green); border-bottom-color: var(--green);
   font-weight: 500; }
@@ -40,7 +40,7 @@ nav button.active { color: var(--green); border-bottom-color: var(--green);
 .tab-content.active { display: block; }
 .card { background: var(--surface); border-radius: var(--radius); border: 1px solid var(--gray-border);
   padding: 16px; margin-bottom: 14px; box-shadow: var(--shadow); }
-.card h2 { font-size: 16px; font-weight: 600; margin-bottom: 12px; color: var(--green); }
+.card h2 { font-size: 16px; font-weight: 600; margin-bottom: 12px; color: var(--green-heading); }
 .card h3 { font-size: 14px; font-weight: 600; margin-bottom: 8px; }
 .badge { display: inline-flex; align-items: center; gap: 4px; padding: 3px 8px;
   border-radius: 12px; font-size: 12px; font-weight: 500; }
@@ -86,8 +86,10 @@ tr:hover td { background: var(--surface-2); }
   padding: 10px 14px; border-radius: 0 var(--radius) var(--radius) 0; margin-bottom: 12px; }
 .warn-block { background: var(--amber-light); border-left: 3px solid var(--amber);
   padding: 10px 14px; border-radius: 0 var(--radius) var(--radius) 0; margin-bottom: 12px; }
-.haram-block { background: var(--red-light); border-left: 3px solid var(--red);
-  padding: 10px 14px; border-radius: 0 var(--radius) var(--radius) 0; margin-bottom: 8px; }
+.haram-block { background: rgba(248,113,113,.06); border: 1px solid rgba(248,113,113,.2);
+  border-left: 3px solid var(--red); padding: 10px 14px;
+  border-radius: 0 var(--radius) var(--radius) 0; margin-bottom: 8px; }
+.haram-block div[style*="color:#7f1d1d"] { color: var(--text-muted) !important; }
 .loader { text-align: center; padding: 20px; color: var(--text-muted); font-size: 13px; }
 .price-row { display: flex; align-items: baseline; gap: 8px; }
 .price-big { font-size: 22px; font-weight: 600; }
@@ -217,7 +219,7 @@ h1, h2, h3, .wt-title, .home-greeting h2, .hc-title, .card h2, .card h3,
 <header>
   <div style="font-size:26px">☪</div>
   <div>
-    <h1>Filtrd</h1>
+    <h1 onclick="goHome()" style="cursor:pointer" title="Back to Home">Filtrd</h1>
     <span>by Paisa Paisa Girl · Ethical investing for India</span>
   </div>
   <div style="margin-left:auto;display:flex;align-items:center;gap:12px">
@@ -345,6 +347,52 @@ h1, h2, h3, .wt-title, .home-greeting h2, .hc-title, .card h2, .card h3,
 
   <div id="stockDetailPanel" style="display:none">
     <div class="card stock-detail" id="detailContent"></div>
+  </div>
+
+  <div class="card" style="margin-top:8px">
+    <h2>Screen Any Stock — Manual Entry</h2>
+    <p class="tab-intro">For any NSE/BSE stock not in our database, look up the 5 ratios on <a href="https://www.screener.in" target="_blank" style="color:var(--green-heading)">screener.in</a> or the annual report, enter them below, and get an instant AAOIFI verdict.</p>
+    <div style="margin-bottom:12px">
+      <label style="font-size:12px;color:var(--text-muted);display:block;margin-bottom:4px">Company name or ticker (for your reference)</label>
+      <input type="text" id="customName" placeholder="e.g. IRFC, Adani Power, Zomato" style="width:100%;padding:8px 12px;border:1px solid var(--gray-border);border-radius:var(--radius);background:var(--surface-2);color:var(--text);font-size:13px;font-family:inherit">
+    </div>
+    <div style="margin-bottom:12px">
+      <label style="font-size:12px;color:var(--text-muted);display:block;margin-bottom:6px">Business Screen — is the core business halal?</label>
+      <select id="customBusiness" style="width:100%;padding:8px 12px;border:1px solid var(--gray-border);border-radius:var(--radius);background:var(--surface-2);color:var(--text);font-size:13px;font-family:inherit">
+        <option value="pass">Pass — Core business is halal (IT, pharma, FMCG, real estate, manufacturing…)</option>
+        <option value="fail">Fail — Core business is haram (banking, alcohol, tobacco, weapons, conventional insurance…)</option>
+      </select>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px">
+      <div>
+        <label style="font-size:12px;color:var(--text-muted);display:block;margin-bottom:4px">Debt / Total Assets % <span style="color:var(--amber)">(limit: &lt;33%)</span></label>
+        <input type="number" id="customDebt" placeholder="e.g. 18.5" min="0" max="200" step="0.1" style="width:100%;padding:8px 10px;border:1px solid var(--gray-border);border-radius:var(--radius);background:var(--surface-2);color:var(--text);font-size:13px;font-family:inherit">
+        <div style="font-size:11px;color:var(--text-muted);margin-top:3px">Total Borrowings ÷ Total Assets × 100</div>
+      </div>
+      <div>
+        <label style="font-size:12px;color:var(--text-muted);display:block;margin-bottom:4px">Interest Income / Revenue % <span style="color:var(--amber)">(limit: &lt;5%)</span></label>
+        <input type="number" id="customInterest" placeholder="e.g. 2.1" min="0" max="100" step="0.1" style="width:100%;padding:8px 10px;border:1px solid var(--gray-border);border-radius:var(--radius);background:var(--surface-2);color:var(--text);font-size:13px;font-family:inherit">
+        <div style="font-size:11px;color:var(--text-muted);margin-top:3px">Interest earned ÷ Total Revenue × 100</div>
+      </div>
+      <div>
+        <label style="font-size:12px;color:var(--text-muted);display:block;margin-bottom:4px">Receivables / Total Assets % <span style="color:var(--amber)">(limit: &lt;49%)</span></label>
+        <input type="number" id="customRecv" placeholder="e.g. 31.0" min="0" max="100" step="0.1" style="width:100%;padding:8px 10px;border:1px solid var(--gray-border);border-radius:var(--radius);background:var(--surface-2);color:var(--text);font-size:13px;font-family:inherit">
+        <div style="font-size:11px;color:var(--text-muted);margin-top:3px">Trade Receivables ÷ Total Assets × 100</div>
+      </div>
+      <div>
+        <label style="font-size:12px;color:var(--text-muted);display:block;margin-bottom:4px">Cash &amp; Equivalents / Assets % <span style="color:var(--amber)">(limit: &lt;33%)</span></label>
+        <input type="number" id="customCash" placeholder="e.g. 8.5" min="0" max="100" step="0.1" style="width:100%;padding:8px 10px;border:1px solid var(--gray-border);border-radius:var(--radius);background:var(--surface-2);color:var(--text);font-size:13px;font-family:inherit">
+        <div style="font-size:11px;color:var(--text-muted);margin-top:3px">Cash &amp; Bank Balances ÷ Total Assets × 100</div>
+      </div>
+    </div>
+    <button onclick="runManualScreen()" style="width:100%;padding:10px;background:var(--green);color:white;border:none;border-radius:var(--radius);font-size:14px;font-weight:600;cursor:pointer;font-family:'Satoshi','Inter',sans-serif">
+      Screen This Stock →
+    </button>
+    <div id="manualResult" style="margin-top:16px"></div>
+    <div class="info-block" style="margin-top:14px">
+      <strong>How to find these numbers on screener.in:</strong><br>
+      Search the company → Balance Sheet tab → note Total Borrowings and Total Assets → P&amp;L tab → note Other Income (interest portion) and Total Revenue. Divide and multiply by 100 to get %.
+    </div>
   </div>
 
   <div class="disclaimer">
@@ -717,8 +765,11 @@ let goldData = { goldUSD:2380, silverUSD:30.2, usdINR:83.5, goldINR:(2380/31.103
 let currentStocks = [...STOCK_DATA];
 
 function weekNumber(d){ return Math.floor((d||Date.now())/(7*24*60*60*1000)); }
+function dayNumber(){ return Math.floor(Date.now()/(24*60*60*1000)); }
 function cacheSet(k,v){ try{localStorage.setItem(k,JSON.stringify({v,w:weekNumber()}))}catch(e){} }
 function cacheGet(k){ try{const s=localStorage.getItem(k);if(!s)return null;const p=JSON.parse(s);if(p.w===weekNumber())return p.v;return null}catch(e){return null} }
+function cacheSetDay(k,v){ try{localStorage.setItem(k,JSON.stringify({v,d:dayNumber()}))}catch(e){} }
+function cacheGetDay(k){ try{const s=localStorage.getItem(k);if(!s)return null;const p=JSON.parse(s);if(p.d===dayNumber())return p.v;return null}catch(e){return null} }
 
 // ═══════════════════════════════════════════════
 //  TAB NAVIGATION
@@ -862,6 +913,42 @@ async function fetchLivePrices(){
   }
 }
 
+function runManualScreen(){
+  const name=document.getElementById('customName').value.trim()||'Custom Stock';
+  const business=document.getElementById('customBusiness').value;
+  const debt=parseFloat(document.getElementById('customDebt').value)||0;
+  const interest=parseFloat(document.getElementById('customInterest').value)||0;
+  const recv=parseFloat(document.getElementById('customRecv').value)||0;
+  const cash=parseFloat(document.getElementById('customCash').value)||0;
+  const isHaram=business==='fail';
+  const critBox=(label,val,limit)=>{
+    const cls=isHaram?'fail':(val>limit?'fail':(val>limit*.8?'warn':'ok'));
+    const color=isHaram?'var(--red)':(val>limit?'var(--red)':(val>limit*.8?'var(--amber)':'var(--green)'));
+    return `<div class="crit-box ${cls}"><div class="crit-name">${label}</div><div class="crit-val" style="color:${color}">${val.toFixed(1)}%</div><div class="crit-limit">Limit: ${limit}%</div></div>`;
+  };
+  let verdict='HALAL';
+  if(isHaram||debt>33||interest>5||recv>49||cash>33) verdict='HARAM';
+  else if(debt>26.4||interest>4||recv>39.2||cash>26.4) verdict='DOUBTFUL';
+  document.getElementById('manualResult').innerHTML=`
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;flex-wrap:wrap">
+      <strong style="font-size:16px">${name}</strong>${verdictBadge(verdict)}
+    </div>
+    <div class="criteria-grid">
+      <div class="crit-box ${isHaram?'fail':'ok'}">
+        <div class="crit-name">Business Screen</div>
+        <div class="crit-val" style="color:${isHaram?'var(--red)':'var(--green)'}">${isHaram?'FAIL':'PASS'}</div>
+        <div class="crit-limit">Haram activity = fail</div>
+      </div>
+      ${critBox('Debt ratio',debt,33)}
+      ${critBox('Interest income',interest,5)}
+      ${critBox('Receivables',recv,49)}
+      ${critBox('Cash ratio',cash,33)}
+    </div>
+    ${!isHaram&&interest>0?`<div class="warn-block" style="margin-top:12px"><strong>Purification:</strong> Donate ${interest.toFixed(1)}% of any dividends received from this stock to charity to cleanse the impermissible income fraction.</div>`:''}
+    <div style="margin-top:10px;font-size:12px;color:var(--text-muted)">Result based on AAOIFI Standard No. 21. Not a fatwa — consult a qualified scholar before investing.</div>`;
+  document.getElementById('manualResult').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
 // ═══════════════════════════════════════════════
 //  GOLD PRICES
 // ═══════════════════════════════════════════════
@@ -881,34 +968,36 @@ async function fetchGoldPrices(){
     goldData={goldUSD,silverUSD,usdINR,goldINR:(goldUSD/31.1035)*usdINR,silverINR:(silverUSD/31.1035)*usdINR};
     cacheSet('gold_data',goldData);
   }catch(e){
-    // Fallback static values
     goldData={goldUSD:2380,silverUSD:30.2,usdINR:83.5,goldINR:(2380/31.1035)*83.5,silverINR:(30.2/31.1035)*83.5};
   }
   renderGold();updateNisab();
 }
 
 function renderGold(){
+  const TOLA=11.6638;
+  const goldPerTola=Math.round(goldData.goldINR*TOLA).toLocaleString('en-IN');
+  const silverPerTola=Math.round(goldData.silverINR*TOLA).toLocaleString('en-IN');
   const box=document.getElementById('goldPriceBox');
   box.innerHTML=`
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px">
-      <div style="background:var(--amber-light);border-radius:8px;padding:12px;text-align:center">
-        <div style="font-size:11px;color:var(--amber);font-weight:500">GOLD (per gram)</div>
-        <div style="font-size:22px;font-weight:700;color:var(--amber)">₹${Math.round(goldData.goldINR).toLocaleString('en-IN')}</div>
-        <div style="font-size:11px;color:var(--text-muted)">$${goldData.goldUSD.toFixed(2)}/troy oz</div>
+      <div style="background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.25);border-radius:8px;padding:14px;text-align:center">
+        <div style="font-size:11px;color:var(--amber);font-weight:600;letter-spacing:.5px">GOLD</div>
+        <div style="font-size:22px;font-weight:700;color:var(--amber);margin:4px 0">₹${Math.round(goldData.goldINR).toLocaleString('en-IN')}<span style="font-size:12px;font-weight:400">/gram</span></div>
+        <div style="font-size:12px;color:var(--text-muted)">₹${goldPerTola} / tola (11.66g)</div>
       </div>
-      <div style="background:#f3f4f6;border-radius:8px;padding:12px;text-align:center">
-        <div style="font-size:11px;color:var(--text-muted);font-weight:500">SILVER (per gram)</div>
-        <div style="font-size:22px;font-weight:700">₹${Math.round(goldData.silverINR).toLocaleString('en-IN')}</div>
-        <div style="font-size:11px;color:var(--text-muted)">$${goldData.silverUSD.toFixed(2)}/troy oz</div>
+      <div style="background:rgba(148,163,184,.08);border:1px solid rgba(148,163,184,.2);border-radius:8px;padding:14px;text-align:center">
+        <div style="font-size:11px;color:var(--text-muted);font-weight:600;letter-spacing:.5px">SILVER</div>
+        <div style="font-size:22px;font-weight:700;color:var(--text);margin:4px 0">₹${Math.round(goldData.silverINR).toLocaleString('en-IN')}<span style="font-size:12px;font-weight:400">/gram</span></div>
+        <div style="font-size:12px;color:var(--text-muted)">₹${silverPerTola} / tola (11.66g)</div>
       </div>
-      <div style="background:var(--blue-light);border-radius:8px;padding:12px;text-align:center">
-        <div style="font-size:11px;color:var(--blue);font-weight:500">USD/INR</div>
-        <div style="font-size:22px;font-weight:700;color:var(--blue)">₹${goldData.usdINR.toFixed(2)}</div>
-        <div style="font-size:11px;color:var(--text-muted)">Exchange rate</div>
+      <div style="background:rgba(96,165,250,.08);border:1px solid rgba(96,165,250,.2);border-radius:8px;padding:14px;text-align:center">
+        <div style="font-size:11px;color:var(--blue);font-weight:600;letter-spacing:.5px">USD / INR</div>
+        <div style="font-size:22px;font-weight:700;color:var(--blue);margin:4px 0">₹${goldData.usdINR.toFixed(2)}</div>
+        <div style="font-size:12px;color:var(--text-muted)">Exchange rate</div>
       </div>
     </div>
-    <div style="font-size:11px;color:var(--text-muted);margin-top:8px;text-align:right">
-      Prices from goldprice.org + open.er-api.com · Cached weekly · 1 troy oz = 31.1035g
+    <div style="font-size:11px;color:var(--text-muted);margin-top:10px;text-align:right">
+      Prices from goldprice.org + open.er-api.com · Refreshed weekly · 1 tola = 11.6638g
     </div>`;
 }
 
