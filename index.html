@@ -11,12 +11,12 @@
 <style>
 :root {
   --green: #16a34a; --green-light: #052e16; --green-mid: #15803d; --green-heading: #0ea855;
-  --amber: #f59e0b; --amber-light: #431407; --amber-bg: #1c0f00;
+  --amber: #F0B429; --amber-light: #241800; --amber-bg: #181100;
   --red: #f87171; --red-light: #450a0a;
-  --blue: #60a5fa; --blue-light: #0c1a3a;
+  --blue: #0057FF; --blue-light: #00104d;
   --gray: #9ca3af; --gray-light: #1a1a1a; --gray-border: #2a2a2a;
   --text: #e5e7eb; --text-muted: #9ca3af;
-  --gold: #f59e0b; --gold-light: #431407;
+  --gold: #F0B429; --gold-light: #241800;
   --radius: 8px; --shadow: 0 2px 8px rgba(0,0,0,.6);
   --surface: #141414; --surface-2: #1e1e1e;
 }
@@ -125,7 +125,7 @@ tr:hover td { background: var(--surface-2); }
 .crit-box .crit-val { font-size: 16px; font-weight: 700; }
 .crit-box .crit-limit { font-size: 10px; color: var(--text-muted); }
 .crit-box.ok { background: var(--green-light); border-color: #a7d7b8; }
-.crit-box.warn { background: var(--amber-bg); border-color: #fcd34d; }
+.crit-box.warn { background: var(--amber-bg); border-color: var(--amber); }
 .crit-box.fail { background: var(--red-light); border-color: #fca5a5; }
 .tab-intro { font-size: 13px; color: var(--text-muted); margin-bottom: 16px; line-height: 1.6; }
 .sukuk-timeline { position: relative; padding-left: 24px; }
@@ -1016,7 +1016,7 @@ function renderGold(){
   const box=document.getElementById('goldPriceBox');
   box.innerHTML=`
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px">
-      <div style="background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.25);border-radius:8px;padding:14px;text-align:center">
+      <div style="background:rgba(240,180,41,.1);border:1px solid rgba(240,180,41,.3);border-radius:8px;padding:14px;text-align:center">
         <div style="font-size:11px;color:var(--amber);font-weight:600;letter-spacing:.5px">GOLD</div>
         <div style="font-size:22px;font-weight:700;color:var(--amber);margin:4px 0">₹${Math.round(goldData.goldINR).toLocaleString('en-IN')}<span style="font-size:12px;font-weight:400">/gram</span></div>
         <div style="font-size:12px;color:var(--text-muted)">₹${goldPerTola} / tola (11.66g)</div>
@@ -1026,7 +1026,7 @@ function renderGold(){
         <div style="font-size:22px;font-weight:700;color:var(--text);margin:4px 0">₹${Math.round(goldData.silverINR).toLocaleString('en-IN')}<span style="font-size:12px;font-weight:400">/gram</span></div>
         <div style="font-size:12px;color:var(--text-muted)">₹${silverPerTola} / tola (11.66g)</div>
       </div>
-      <div style="background:rgba(96,165,250,.08);border:1px solid rgba(96,165,250,.2);border-radius:8px;padding:14px;text-align:center">
+      <div style="background:rgba(0,87,255,.08);border:1px solid rgba(0,87,255,.25);border-radius:8px;padding:14px;text-align:center">
         <div style="font-size:11px;color:var(--blue);font-weight:600;letter-spacing:.5px">USD / INR</div>
         <div style="font-size:22px;font-weight:700;color:var(--blue);margin:4px 0">₹${goldData.usdINR.toFixed(2)}</div>
         <div style="font-size:12px;color:var(--text-muted)">Exchange rate</div>
