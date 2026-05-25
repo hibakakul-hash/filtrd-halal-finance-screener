@@ -797,7 +797,7 @@ const GLOSSARY = [
 //  STATE & CACHE
 // ═══════════════════════════════════════════════
 let livePrices = {};
-let goldData = { goldUSD:2380, silverUSD:30.2, usdINR:83.5, goldINR:(2380/31.1035)*83.5, silverINR:(30.2/31.1035)*83.5 };
+let goldData = { goldUSD:4500, silverUSD:75, usdINR:96, goldINR:(4500/31.1035)*96, silverINR:(75/31.1035)*96 };
 let currentStocks = [...STOCK_DATA];
 
 function weekNumber(d){ return Math.floor((d||Date.now())/(7*24*60*60*1000)); }
@@ -991,21 +991,19 @@ function runManualScreen(){
 async function fetchGoldPrices(){
   const cached=cacheGet('gold_data');
   if(cached){goldData=cached;renderGold();updateNisab();return;}
+  const TROY=31.1035;
   try{
-    const [goldR,fxR]=await Promise.all([
-      fetch('https://data-asg.goldprice.org/dbXRates/USD'),
-      fetch('https://open.er-api.com/v6/latest/USD')
-    ]);
-    const gd=await goldR.json();
-    const fd=await fxR.json();
-    const usdINR=fd.rates?.INR||83.5;
-    const goldUSD=gd.items?.[0]?.xauPrice||2350;
-    const silverUSD=gd.items?.[0]?.xagPrice||29;
-    goldData={goldUSD,silverUSD,usdINR,goldINR:(goldUSD/31.1035)*usdINR,silverINR:(silverUSD/31.1035)*usdINR};
-    cacheSet('gold_data',goldData);
-  }catch(e){
-    goldData={goldUSD:2380,silverUSD:30.2,usdINR:83.5,goldINR:(2380/31.1035)*83.5,silverINR:(30.2/31.1035)*83.5};
-  }
+    const r=await fetch('https://api.coingecko.com/api/v3/simple/price?ids=pax-gold,kinesis-silver&vs_currencies=inr,usd');
+    const d=await r.json();
+    const goldUSD=d['pax-gold']?.usd;
+    const goldINR_oz=d['pax-gold']?.inr;
+    const silverUSD=d['kinesis-silver']?.usd||0;
+    const silverINR_oz=d['kinesis-silver']?.inr||0;
+    if(goldUSD&&goldINR_oz){
+      goldData={goldUSD,silverUSD,usdINR:goldINR_oz/goldUSD,goldINR:goldINR_oz/TROY,silverINR:silverINR_oz/TROY};
+      cacheSet('gold_data',goldData);
+    }
+  }catch(e){}
   renderGold();updateNisab();
 }
 
@@ -1033,7 +1031,7 @@ function renderGold(){
       </div>
     </div>
     <div style="font-size:11px;color:var(--text-muted);margin-top:10px;text-align:right">
-      Prices from goldprice.org + open.er-api.com · Refreshed weekly · 1 tola = 11.6638g
+      Prices via CoinGecko (PAXG · KAG) · Refreshed weekly · 1 tola = 11.6638g
     </div>`;
 }
 
