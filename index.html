@@ -24,23 +24,23 @@
 body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   font-size: 14px; color: var(--text); background: #0a0a0a; line-height: 1.5; }
 header { background: #0f0f0f; color: white; padding: 14px 20px;
-  display: flex; align-items: center; gap: 12px; border-bottom: 1px solid var(--green); }
-header h1 { font-size: 26px; font-weight: 700; color: var(--green-heading); letter-spacing: -.5px; }
+  display: flex; align-items: center; gap: 12px; border-bottom: 1px solid var(--blue); }
+header h1 { font-size: 26px; font-weight: 700; color: var(--blue); letter-spacing: -.5px; }
 header span { font-size: 12px; opacity: .6; }
 nav { background: #0f0f0f; border-bottom: 1px solid var(--gray-border);
   display: flex; flex-wrap: wrap; padding: 0 8px; }
 nav button { padding: 7px 10px; border: none; background: none; cursor: pointer;
   font-size: 12px; color: #888; white-space: nowrap;
   border-bottom: 2px solid transparent; transition: .15s; }
-nav button:hover { color: var(--green); }
-nav button.active { color: var(--green); border-bottom-color: var(--green);
+nav button:hover { color: var(--blue); }
+nav button.active { color: var(--blue); border-bottom-color: var(--blue);
   font-weight: 500; }
 .container { max-width: 1100px; margin: 0 auto; padding: 16px; }
 .tab-content { display: none; }
 .tab-content.active { display: block; }
 .card { background: var(--surface); border-radius: var(--radius); border: 1px solid var(--gray-border);
   padding: 16px; margin-bottom: 14px; box-shadow: var(--shadow); }
-.card h2 { font-size: 16px; font-weight: 600; margin-bottom: 12px; color: var(--green-heading); }
+.card h2 { font-size: 16px; font-weight: 600; margin-bottom: 12px; color: var(--blue); }
 .card h3 { font-size: 14px; font-weight: 600; margin-bottom: 8px; }
 .badge { display: inline-flex; align-items: center; gap: 4px; padding: 3px 8px;
   border-radius: 12px; font-size: 12px; font-weight: 500; }
@@ -53,9 +53,9 @@ nav button.active { color: var(--green); border-bottom-color: var(--green);
   border-radius: var(--radius); font-size: 13px; background: var(--surface-2); color: var(--text); }
 .controls select { flex: 1; min-width: 120px; }
 .controls input { flex: 1; min-width: 140px; }
-.controls button { padding: 8px 16px; background: var(--green); color: white;
+.controls button { padding: 8px 16px; background: var(--blue); color: white;
   border: none; border-radius: var(--radius); cursor: pointer; font-size: 13px; white-space: nowrap; }
-.controls button:hover { background: var(--green-mid); }
+.controls button:hover { background: #0044cc; }
 @media(max-width:500px) {
   .controls { flex-direction: column; }
   .controls select, .controls input, .controls button { width: 100%; min-width: 0; }
@@ -164,7 +164,7 @@ h1, h2, h3, .wt-title, .home-greeting h2, .hc-title, .card h2, .card h3,
 .home-card { background: var(--surface); border: 1px solid var(--gray-border); border-radius: 14px;
   padding: 22px 16px 18px; cursor: pointer; transition: border-color .2s, transform .15s, box-shadow .2s;
   display: flex; flex-direction: column; align-items: center; gap: 10px; text-align: center; }
-.home-card:hover { border-color: var(--green); transform: translateY(-3px); box-shadow: 0 8px 24px rgba(34,197,94,.12); }
+.home-card:hover { border-color: var(--blue); transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,87,255,.12); }
 .home-card .hc-icon { font-size: 34px; }
 .home-card .hc-title { font-size: 14px; font-weight: 600; color: var(--text); }
 .home-card .hc-desc { font-size: 11px; color: var(--text-muted); line-height: 1.6; }
@@ -188,38 +188,38 @@ h1, h2, h3, .wt-title, .home-greeting h2, .hc-title, .card h2, .card h3,
 .li-icon { font-size: 15px; flex-shrink: 0; margin-top: 1px; }
 .wt-dots { display: flex; gap: 6px; justify-content: center; margin-bottom: 22px; }
 .wt-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--gray-border); transition: all .25s; }
-.wt-dot.active { background: var(--green); width: 22px; border-radius: 4px; }
+.wt-dot.active { background: var(--blue); width: 22px; border-radius: 4px; }
 .wt-footer { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
 .wt-btn-prev { background: none; border: 1px solid var(--gray-border); color: var(--text-muted);
   padding: 10px 18px; border-radius: 8px; cursor: pointer; font-size: 13px; font-family: inherit; white-space: nowrap; }
 .wt-btn-prev:hover { border-color: var(--text-muted); color: var(--text); }
-.wt-btn-next { background: var(--green); color: #0a0a0a; border: none; padding: 10px 24px;
+.wt-btn-next { background: var(--blue); color: white; border: none; padding: 10px 24px;
   border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 700; flex: 1; font-family: inherit; }
-.wt-btn-next:hover { background: var(--green-mid); }
+.wt-btn-next:hover { background: #0044cc; }
 
 /* ── BACK BUTTON ── */
 .back-btn { display: none; background: none; border: 1px solid var(--gray-border);
   color: var(--text-muted); padding: 6px 12px; border-radius: 6px; cursor: pointer;
   font-size: 12px; align-items: center; gap: 4px; white-space: nowrap; font-family: inherit; }
 .back-btn.visible { display: flex; }
-.back-btn:hover { border-color: var(--green); color: var(--green); }
+.back-btn:hover { border-color: var(--blue); color: var(--blue); }
 
 /* ── USER CHIP ── */
-.user-chip { display:flex; align-items:center; gap:6px; background:var(--green-light);
-  border:1px solid var(--green); border-radius:20px; padding:4px 12px; cursor:pointer;
-  font-size:12px; color:var(--green); font-family:'Satoshi','Inter',sans-serif; font-weight:600; }
-.user-chip:hover { background: #0a3d1a; }
+.user-chip { display:flex; align-items:center; gap:6px; background:var(--blue-light);
+  border:1px solid var(--blue); border-radius:20px; padding:4px 12px; cursor:pointer;
+  font-size:12px; color:var(--blue); font-family:'Satoshi','Inter',sans-serif; font-weight:600; }
+.user-chip:hover { background: #001a66; }
 
 /* ── ALLOWED ITEM LINK ── */
 .allowed-link { cursor:pointer; transition:border-color .15s; }
-.allowed-link:hover { border-color:var(--green) !important; }
-.allowed-link .go-arrow { font-size:11px; color:var(--green); font-weight:600; margin-top:4px; display:inline-block; }
+.allowed-link:hover { border-color:var(--blue) !important; }
+.allowed-link .go-arrow { font-size:11px; color:var(--blue); font-weight:600; margin-top:4px; display:inline-block; }
 
 /* ── RESOURCES GRID ── */
 .resources-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 4px; }
 .res-card { background: var(--surface-2); border: 1px solid var(--gray-border); border-radius: 10px;
   padding: 14px 12px; cursor: pointer; transition: border-color .2s; }
-.res-card:hover { border-color: var(--green); }
+.res-card:hover { border-color: var(--blue); }
 .res-card .rc-icon { font-size: 20px; margin-bottom: 6px; }
 .res-card .rc-title { font-size: 13px; font-weight: 600; color: var(--text); }
 .res-card .rc-desc { font-size: 11px; color: var(--text-muted); margin-top: 2px; line-height: 1.5; }
@@ -317,7 +317,7 @@ h1, h2, h3, .wt-title, .home-greeting h2, .hc-title, .card h2, .card h3,
       <label style="font-size:12px;color:var(--text-muted);display:block;margin-bottom:4px">Email address</label>
       <input type="email" id="signupEmail" placeholder="you@example.com" style="width:100%;padding:9px 12px;border:1px solid var(--gray-border);border-radius:var(--radius);background:var(--surface-2);color:var(--text);font-size:14px;font-family:inherit">
     </div>
-    <button onclick="submitSignup()" style="width:100%;padding:11px;background:var(--green);color:white;border:none;border-radius:var(--radius);font-size:14px;font-weight:700;cursor:pointer;font-family:'Satoshi','Inter',sans-serif;margin-bottom:12px">
+    <button onclick="submitSignup()" style="width:100%;padding:11px;background:var(--blue);color:white;border:none;border-radius:var(--radius);font-size:14px;font-weight:700;cursor:pointer;font-family:'Satoshi','Inter',sans-serif;margin-bottom:12px">
       Join &amp; Continue →
     </button>
     <div style="text-align:center">
@@ -421,7 +421,7 @@ h1, h2, h3, .wt-title, .home-greeting h2, .hc-title, .card h2, .card h3,
         <div style="font-size:11px;color:var(--text-muted);margin-top:3px">Cash &amp; Bank Balances ÷ Total Assets × 100</div>
       </div>
     </div>
-    <button onclick="runManualScreen()" style="width:100%;padding:10px;background:var(--green);color:white;border:none;border-radius:var(--radius);font-size:14px;font-weight:600;cursor:pointer;font-family:'Satoshi','Inter',sans-serif">
+    <button onclick="runManualScreen()" style="width:100%;padding:10px;background:var(--blue);color:white;border:none;border-radius:var(--radius);font-size:14px;font-weight:600;cursor:pointer;font-family:'Satoshi','Inter',sans-serif">
       Screen This Stock →
     </button>
     <div id="manualResult" style="margin-top:16px"></div>
@@ -797,7 +797,7 @@ const GLOSSARY = [
 //  STATE & CACHE
 // ═══════════════════════════════════════════════
 let livePrices = {};
-let goldData = { goldUSD:2380, silverUSD:30.2, usdINR:83.5, goldINR:(2380/31.1035)*83.5, silverINR:(30.2/31.1035)*83.5 };
+let goldData = { goldUSD:4500, silverUSD:75, usdINR:96, goldINR:(4500/31.1035)*96, silverINR:(75/31.1035)*96 };
 let currentStocks = [...STOCK_DATA];
 
 function weekNumber(d){ return Math.floor((d||Date.now())/(7*24*60*60*1000)); }
@@ -869,7 +869,7 @@ function renderStockTable(){
       <td>${isHaram?'—':ratioBar(s.interestInc,5)}</td>
       <td>${isHaram?'—':ratioBar(s.recv,49)}</td>
       <td>${isHaram?'—':ratioBar(s.cash,33)}</td>
-      <td><button onclick="showDetail('${s.ticker}')" style="font-size:11px;padding:4px 8px;background:var(--green);color:white;border:none;border-radius:4px;cursor:pointer">Details</button></td>
+      <td><button onclick="showDetail('${s.ticker}')" style="font-size:11px;padding:4px 8px;background:var(--blue);color:white;border:none;border-radius:4px;cursor:pointer">Details</button></td>
     </tr>`;
   }).join('');
 }
@@ -991,21 +991,19 @@ function runManualScreen(){
 async function fetchGoldPrices(){
   const cached=cacheGet('gold_data');
   if(cached){goldData=cached;renderGold();updateNisab();return;}
+  const TROY=31.1035;
   try{
-    const [goldR,fxR]=await Promise.all([
-      fetch('https://data-asg.goldprice.org/dbXRates/USD'),
-      fetch('https://open.er-api.com/v6/latest/USD')
-    ]);
-    const gd=await goldR.json();
-    const fd=await fxR.json();
-    const usdINR=fd.rates?.INR||83.5;
-    const goldUSD=gd.items?.[0]?.xauPrice||2350;
-    const silverUSD=gd.items?.[0]?.xagPrice||29;
-    goldData={goldUSD,silverUSD,usdINR,goldINR:(goldUSD/31.1035)*usdINR,silverINR:(silverUSD/31.1035)*usdINR};
-    cacheSet('gold_data',goldData);
-  }catch(e){
-    goldData={goldUSD:2380,silverUSD:30.2,usdINR:83.5,goldINR:(2380/31.1035)*83.5,silverINR:(30.2/31.1035)*83.5};
-  }
+    const r=await fetch('https://api.coingecko.com/api/v3/simple/price?ids=pax-gold,kinesis-silver&vs_currencies=inr,usd');
+    const d=await r.json();
+    const goldUSD=d['pax-gold']?.usd;
+    const goldINR_oz=d['pax-gold']?.inr;
+    const silverUSD=d['kinesis-silver']?.usd||0;
+    const silverINR_oz=d['kinesis-silver']?.inr||0;
+    if(goldUSD&&goldINR_oz){
+      goldData={goldUSD,silverUSD,usdINR:goldINR_oz/goldUSD,goldINR:goldINR_oz/TROY,silverINR:silverINR_oz/TROY};
+      cacheSet('gold_data',goldData);
+    }
+  }catch(e){}
   renderGold();updateNisab();
 }
 
@@ -1033,7 +1031,7 @@ function renderGold(){
       </div>
     </div>
     <div style="font-size:11px;color:var(--text-muted);margin-top:10px;text-align:right">
-      Prices from goldprice.org + open.er-api.com · Refreshed weekly · 1 tola = 11.6638g
+      Prices via CoinGecko (PAXG · KAG) · Refreshed weekly · 1 tola = 11.6638g
     </div>`;
 }
 
@@ -1194,7 +1192,7 @@ function renderAllowed(){
       ${a.link?`onclick="showSection('${a.link}')" title="Open ${a.title}"`:''}>
       <span style="font-size:24px;flex-shrink:0">${a.emoji}</span>
       <div style="flex:1">
-        <div style="font-weight:600">${a.title} <span class="badge halal" style="margin-left:6px">✅ ${a.status}</span>${a.link?'<span style="margin-left:8px;font-size:11px;color:var(--green-heading);font-weight:600">Open →</span>':''}</div>
+        <div style="font-weight:600">${a.title} <span class="badge halal" style="margin-left:6px">✅ ${a.status}</span>${a.link?'<span style="margin-left:8px;font-size:11px;color:var(--blue);font-weight:600">Open →</span>':''}</div>
         <div style="font-size:12px;color:var(--text-muted);margin-top:4px">${a.desc}</div>
         <div style="font-size:12px;margin-top:6px"><strong>Available in India:</strong> ${a.india}</div>
       </div>
