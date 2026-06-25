@@ -989,7 +989,7 @@ function runManualScreen(){
 //  GOLD PRICES
 // ═══════════════════════════════════════════════
 async function fetchGoldPrices(){
-  const cached=cacheGet('gold_data');
+  const cached=cacheGet('gold_cg_v2');
   if(cached){goldData=cached;renderGold();updateNisab();return;}
   const TROY=31.1035;
   try{
@@ -1001,7 +1001,7 @@ async function fetchGoldPrices(){
     const silverINR_oz=d['kinesis-silver']?.inr||0;
     if(goldUSD&&goldINR_oz){
       goldData={goldUSD,silverUSD,usdINR:goldINR_oz/goldUSD,goldINR:goldINR_oz/TROY,silverINR:silverINR_oz/TROY};
-      cacheSet('gold_data',goldData);
+      cacheSet('gold_cg_v2',goldData);
     }
   }catch(e){}
   renderGold();updateNisab();
